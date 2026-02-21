@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudan Medical Board Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --card: #1a1d27;
+  --card-hover: #22263a;
+  --border: #2a2e3f;
+  --text: #e4e6ef;
+  --text-dim: #8b8fa3;
+  --accent: #6c5ce7;
+  --accent-light: #a29bfe;
+  --correct: #00b894;
+  --correct-bg: rgba(0,184,148,0.12);
+  --wrong: #e17055;
+  --wrong-bg: rgba(225,112,85,0.12);
+  --surgery: #e17055;
+  --medicine: #6c5ce7;
+  --obgyn: #00b894;
+  --pediatrics: #fdcb6e;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* START SCREEN */
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 24px;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(108,92,231,0.3);
+}
+
+.start-screen h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.start-screen .subtitle {
+  color: var(--text-dim);
+  font-size: 1rem;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-card .num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+.stat-card .label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.3s;
+  box-shadow: 0 4px 24px rgba(108,92,231,0.3);
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(108,92,231,0.4);
+}
+
+/* EXAM SCREEN */
+.exam-screen { display:none; animation: fadeIn 0.4s ease; }
+.exam-screen.active { display:block; }
+
+/* Section Tabs */
+.section-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 0;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+}
+.section-tabs::-webkit-scrollbar { display:none; }
+
+.section-tab {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+
+.section-tab:hover { border-color: var(--accent); color: var(--text); }
+
+.section-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.section-tab .count {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+/* Progress */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+/* Question Card */
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.q-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.q-number {
+  background: var(--accent);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.q-section-badge {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.q-section-badge.Surgery { background: rgba(225,112,85,0.15); color: var(--surgery); }
+.q-section-badge.Medicine { background: rgba(108,92,231,0.15); color: var(--accent-light); }
+.q-section-badge.OB\/GYN, .q-section-badge.obgyn { background: rgba(0,184,148,0.15); color: var(--obgyn); }
+.q-section-badge.Pediatrics { background: rgba(253,203,110,0.15); color: var(--pediatrics); }
+
+.q-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+/* Options */
+.options { display:flex; flex-direction:column; gap:8px; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.option:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: rgba(108,92,231,0.06);
+}
+
+.option .letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--card-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.option.selected {
+  border-color: var(--accent);
+  background: rgba(108,92,231,0.1);
+}
+.option.selected .letter {
+  background: var(--accent);
+  color: #fff;
+}
+
+.option.correct {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}
+.option.correct .letter {
+  background: var(--correct);
+  color: #fff;
+}
+
+.option.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-bg);
+}
+.option.wrong .letter {
+  background: var(--wrong);
+  color: #fff;
+}
+
+.option.disabled { cursor: default; opacity: 0.7; }
+.option.correct.disabled { opacity: 1; }
+
+/* Navigation */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.btn-nav {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover { border-color: var(--accent); background: var(--card-hover); }
+
+.btn-nav.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-nav.primary:hover { background: var(--accent-light); }
+
+.btn-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Top Bar */
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.top-bar .title {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.top-bar .btn-top {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-submit-top {
+  background: var(--correct);
+  color: #fff;
+}
+
+.btn-results-top {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* RESULTS SCREEN */
+.results-screen { display:none; animation: fadeIn 0.5s ease; }
+.results-screen.active { display:block; }
+
+.results-header {
+  text-align: center;
+  padding: 40px 0 32px;
+}
+
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 6px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.score-circle .score-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  line-height: 1;
+}
+
+.score-circle .score-pct {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.results-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.results-header .result-sub {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.section-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.section-result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.section-result-card .sec-name {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.section-result-card .sec-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.btn-review {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.btn-review:hover { border-color: var(--accent); }
+
+.btn-restart {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-restart:hover { background: var(--accent-light); }
+
+/* Review mode */
+.review-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Question dots navigation */
+.q-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.q-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-dim);
+}
+
+.q-dot:hover { border-color: var(--accent); }
+.q-dot.answered { background: var(--accent); border-color: var(--accent); color: #fff; }
+.q-dot.current { border-color: var(--accent-light); box-shadow: 0 0 0 2px rgba(108,92,231,0.3); }
+.q-dot.correct-dot { background: var(--correct); border-color: var(--correct); color: #fff; }
+.q-dot.wrong-dot { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .start-screen h1 { font-size: 1.6rem; }
+  .question-card { padding: 18px; }
+  .q-text { font-size: 0.9rem; }
+  .option { padding: 12px; font-size: 0.85rem; }
+  .section-tabs { gap: 6px; }
+  .section-tab { padding: 8px 14px; font-size: 0.8rem; }
+  .q-dot { width: 28px; height: 28px; font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div class="start-screen" id="startScreen">
+  <div class="logo-icon">&#9764;</div>
+  <h1>Sudan Medical Board Exam</h1>
+  <p class="subtitle">Practice exam with 173 MCQ questions across 4 medical specialties</p>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">45</div><div class="label">Surgery</div></div>
+    <div class="stat-card"><div class="num">70</div><div class="label">Medicine</div></div>
+    <div class="stat-card"><div class="num">40</div><div class="label">OB/GYN</div></div>
+    <div class="stat-card"><div class="num">18</div><div class="label">Pediatrics</div></div>
+  </div>
+  <button class="btn-start" onclick="startExam()">Start</button>
+</div>
+
+<!-- EXAM SCREEN -->
+<div class="exam-screen" id="examScreen">
+  <div class="top-bar">
+    <span class="title">Sudan Medical Board Exam</span>
+    <span id="topBarBtns"></span>
+  </div>
+  <div class="container">
+    <div class="section-tabs" id="sectionTabs"></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="q-dots" id="qDots"></div>
+    <div id="questionArea"></div>
+    <div class="nav-row">
+      <button class="btn-nav" id="btnPrev" onclick="prevQuestion()">&larr; Previous</button>
+      <button class="btn-nav primary" id="btnNext" onclick="nextQuestion()">Next &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="results-screen" id="resultsScreen">
+  <div class="container">
+    <div class="results-header">
+      <div class="score-circle">
+        <div class="score-num" id="totalScore"></div>
+        <div class="score-pct" id="totalPct"></div>
+      </div>
+      <h2 id="resultTitle"></h2>
+      <p class="result-sub" id="resultSub"></p>
+    </div>
+    <div class="section-results" id="sectionResults"></div>
+    <button class="btn-review" onclick="reviewAnswers()">Review Answers</button>
+    <button class="btn-restart" onclick="restartExam()">Restart Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [{"question": "The best and practical type of fluid to use as a replacement in cases of intestinal obstruction is", "options": [{"letter": "a", "text": "Normal saline plus I/V potassium as required", "is_correct": true}, {"letter": "b", "text": "Ringer lactate", "is_correct": false}, {"letter": "c", "text": "Hartmann solution", "is_correct": false}, {"letter": "d", "text": "Dextrose 5% plus potassium as required", "is_correct": false}, {"letter": "e", "text": "Dextrose saline plus potassium as required", "is_correct": false}], "correct_answer": "a", "number": 1, "section": "Surgery"}, {"question": "A patient underwent a right sided thoracotomy today. The best form of postoperative pain relief for him/her, if available, would be", "options": [{"letter": "a", "text": "I/V pethidine regularly", "is_correct": false}, {"letter": "b", "text": "I/M pethidine regularly", "is_correct": false}, {"letter": "c", "text": "I/M diclofenac regularly", "is_correct": false}, {"letter": "d", "text": "I/V diclofenac regularly", "is_correct": false}, {"letter": "e", "text": "Continuous epidural analgesia through an epidural catheter", "is_correct": true}], "correct_answer": "e", "number": 2, "section": "Surgery"}, {"question": "A patient underwent subtotal thyroidectomy for a huge simple multinodular goiter today. You were called to the ward because she is having difficulty breathing and stridor. There is some swelling of the operation site. Your management will be", "options": [{"letter": "a", "text": "To call your senior to come and sort it out", "is_correct": false}, {"letter": "b", "text": "To remove the stitches in the ward and evacuate any haematoma present", "is_correct": true}, {"letter": "c", "text": "To take the patient to theatre and remove the stitches and explore the wound under anaesthesia", "is_correct": false}, {"letter": "d", "text": "To give the patient I/V pethidine because she may be in pain", "is_correct": false}, {"letter": "e", "text": "To give the patient I/V diazepam because this may be just a hysterical attack", "is_correct": false}], "correct_answer": "b", "number": 3, "section": "Surgery"}, {"question": "A sitz bath is common procedure prescribed postoperatively for patients with anorectal/ perineal conditions. The patient should do it", "options": [{"letter": "a", "text": "Once a day", "is_correct": false}, {"letter": "b", "text": "Twice a day", "is_correct": false}, {"letter": "c", "text": "Three times a day", "is_correct": false}, {"letter": "d", "text": "Four times a day", "is_correct": false}, {"letter": "e", "text": "As much as convenient, but specially after defecation", "is_correct": true}], "correct_answer": "e", "number": 4, "section": "Surgery"}, {"question": "The suitable size of a Foley catheter to use in an adult male who has no urinary tract pathology would be", "options": [{"letter": "a", "text": "Size 10", "is_correct": false}, {"letter": "b", "text": "Size 12", "is_correct": false}, {"letter": "c", "text": "Size 14", "is_correct": true}, {"letter": "d", "text": "Size 16", "is_correct": false}, {"letter": "e", "text": "Size 18", "is_correct": false}], "correct_answer": "c", "number": 5, "section": "Surgery"}, {"question": "The ideal fluid to use when filling the balloon of a Foley catheter would be", "options": [{"letter": "a", "text": "Sterile distilled water", "is_correct": true}, {"letter": "b", "text": "Normal saline", "is_correct": false}, {"letter": "c", "text": "Dextrose 5%", "is_correct": false}, {"letter": "d", "text": "Air", "is_correct": false}, {"letter": "e", "text": "Antibiotic solution", "is_correct": false}], "correct_answer": "a", "number": 6, "section": "Surgery"}, {"question": "You are about to catheterize an adult male. You have available a whole tube containing 30 ml of lignocaine 2% gel. You will", "options": [{"letter": "a", "text": "Use some of it on the external urinary meatus", "is_correct": false}, {"letter": "b", "text": "Use some of it on the catheter tip", "is_correct": false}, {"letter": "c", "text": "Squeeze out half of the contents of the tube down the urethra through the external urinary meatus", "is_correct": false}, {"letter": "d", "text": "Squeeze out all the contents of the tube down the urethra through the external urinary meatus", "is_correct": true}, {"letter": "e", "text": "Both a and b above", "is_correct": false}], "correct_answer": "d", "number": 7, "section": "Surgery"}, {"question": "The minimum acceptable urine output in an adult patient under continuous monitoring is", "options": [{"letter": "a", "text": "30 ml per hour", "is_correct": false}, {"letter": "b", "text": "1.5 liters per day", "is_correct": false}, {"letter": "c", "text": "1 ml per kg per hour", "is_correct": false}, {"letter": "d", "text": "0.5 ml per kg per hour", "is_correct": true}, {"letter": "e", "text": "2 ml per kg per hour", "is_correct": false}], "correct_answer": "d", "number": 8, "section": "Surgery"}, {"question": "All the following procedures require full bowel preparation except", "options": [{"letter": "a", "text": "Sigmoid colectomy", "is_correct": false}, {"letter": "b", "text": "Abdominoperineal resection of the rectum", "is_correct": false}, {"letter": "c", "text": "Closure of a sigmoid colostomy", "is_correct": false}, {"letter": "d", "text": "Resection of a small bowel tumour", "is_correct": true}, {"letter": "e", "text": "Elective CT scan abdomen", "is_correct": false}], "correct_answer": "d", "number": 9, "section": "Surgery"}, {"question": "According to the Goodsall’s law of anal fistulae, if there is a fistula in ano whose opening is in the 4 o’clock position, its internal opening is expected to be", "options": [{"letter": "a", "text": "In the midline anteriorly", "is_correct": false}, {"letter": "b", "text": "In the midline posteriorly", "is_correct": true}, {"letter": "c", "text": "In the 4 o’clock position", "is_correct": false}, {"letter": "d", "text": "In the 8 o’clock position", "is_correct": false}, {"letter": "e", "text": "Absent , as it is likely to be just a sinus", "is_correct": false}], "correct_answer": "b", "number": 10, "section": "Surgery"}, {"question": "When calculating the amount of fluid drained by an underwater seal,", "options": [{"letter": "a", "text": "It is all the fluid from the zero mark up", "is_correct": false}, {"letter": "b", "text": "It is all the fluid in the bottle", "is_correct": false}, {"letter": "c", "text": "It is all the fluid in the bottle minus the fluid you put in the bottle at the beginning", "is_correct": true}, {"letter": "d", "text": "It is the fluid in the bottle plus the fluid in the tubes", "is_correct": false}, {"letter": "e", "text": "It is not important to calculate", "is_correct": false}], "correct_answer": "c", "number": 11, "section": "Surgery"}, {"question": "You are introducing a Foley catheter to an adult male patient, urine started to appear from the distal end of the catheter as expected, you will", "options": [{"letter": "a", "text": "Stop inserting the catheter and inflate the balloon", "is_correct": false}, {"letter": "b", "text": "Insert the catheter till its end then inflate the balloon", "is_correct": false}, {"letter": "c", "text": "Insert the catheter a further few centimetres then inflate the balloon", "is_correct": true}, {"letter": "d", "text": "Inflate the balloon then pull the catheter slightly", "is_correct": false}, {"letter": "e", "text": "Withdraw the catheter a few centimetres then inflate the balloon", "is_correct": false}], "correct_answer": "c", "number": 12, "section": "Surgery"}, {"question": "A 14 years old male fell down and fractured his left clavicle. Your management would be", "options": [{"letter": "a", "text": "Take him to theatre for wiring of the fracture", "is_correct": false}, {"letter": "b", "text": "Take him to theatre for fixation with a plate and screws", "is_correct": false}, {"letter": "c", "text": "Take to theatre for the insertion of percutaneous K-wires", "is_correct": false}, {"letter": "d", "text": "Refer him to another hospital for internal fixation", "is_correct": false}, {"letter": "e", "text": "Prescribe him an arm sling/ holder as a definitive treatment", "is_correct": true}], "correct_answer": "e", "number": 13, "section": "Surgery"}, {"question": "A young child sustained a supracondylar fracture of his right humerus. You suspect that he might have damaged his right median nerve. All the following signs will support this except", "options": [{"letter": "a", "text": "Inability to oppose the thumb to the other fingers", "is_correct": false}, {"letter": "b", "text": "Inability to flex the proximal interphalangeal joint of the index", "is_correct": false}, {"letter": "c", "text": "Inability to flex the distal interphalangeal joint of the little finger", "is_correct": false}, {"letter": "d", "text": "Inability to adduct the thumb", "is_correct": true}, {"letter": "e", "text": "Loss of sensation over the thenar muscles", "is_correct": false}], "correct_answer": "d", "number": 14, "section": "Surgery"}, {"question": "The suitable and convenient way to collect urine from a paraplegic patient, who is confined to bed, is to", "options": [{"letter": "a", "text": "Use of a condom catheter", "is_correct": true}, {"letter": "b", "text": "Use of an indwelling urethral catheter", "is_correct": false}, {"letter": "c", "text": "Use of an indwelling suprapubic catheter", "is_correct": false}, {"letter": "d", "text": "Use of clean intermittent self catheterization", "is_correct": false}, {"letter": "e", "text": "Perform urinary diversion via an ileal conduit", "is_correct": false}], "correct_answer": "a", "number": 15, "section": "Surgery"}, {"question": "The ideal treatment of an abscess is", "options": [{"letter": "a", "text": "Conservative management and to await spontaneous resolution", "is_correct": false}, {"letter": "b", "text": "Surgical drainage at the time of presentation", "is_correct": true}, {"letter": "c", "text": "The use of Ichthamol ointment to make the abscess ripe", "is_correct": false}, {"letter": "d", "text": "Aspiration using a syringe and a fine needle", "is_correct": false}, {"letter": "e", "text": "Use of broad spectrum potent combination of antibiotics", "is_correct": false}], "correct_answer": "b", "number": 16, "section": "Surgery"}, {"question": "In which of the following sites is it most preferable to use a local anaesthetic solution containing adrenaline", "options": [{"letter": "a", "text": "Fingers", "is_correct": false}, {"letter": "b", "text": "Penis", "is_correct": false}, {"letter": "c", "text": "Scalp", "is_correct": true}, {"letter": "d", "text": "Thigh", "is_correct": false}, {"letter": "e", "text": "Anterior abdominal wall", "is_correct": false}], "correct_answer": "c", "number": 17, "section": "Surgery"}, {"question": "The advantage of adrenaline in a local anaesthetic solution is", "options": [{"letter": "a", "text": "To prolong of the duration of action", "is_correct": true}, {"letter": "b", "text": "To abolish the possibility of local anaesthetic toxicity", "is_correct": false}, {"letter": "c", "text": "To enhance the pain killing effect of the local anaesthetic solution", "is_correct": false}, {"letter": "d", "text": "To speed the healing time of the wound", "is_correct": false}, {"letter": "e", "text": "To decrease the incidence of infection", "is_correct": false}], "correct_answer": "a", "number": 18, "section": "Surgery"}, {"question": "The maximum safe dose of lignocaine solution without adrenaline is", "options": [{"letter": "a", "text": "1 mg/ kg bodyweight", "is_correct": false}, {"letter": "b", "text": "2 mg/ kg bodyweight", "is_correct": true}, {"letter": "c", "text": "3 mg/ kg bodyweight", "is_correct": false}, {"letter": "d", "text": "4 mg/ kg bodyweight", "is_correct": false}, {"letter": "e", "text": "5 mg /kg bodyweight", "is_correct": false}], "correct_answer": "b", "number": 19, "section": "Surgery"}, {"question": "When performing an operation under spinal anaesthesia, which of the following signs is the most reliable that the anaesthetic is acting adequately", "options": [{"letter": "a", "text": "Waiting for 5-10 minutes after injection", "is_correct": false}, {"letter": "b", "text": "Flushing of the limbs (vasodilatation)", "is_correct": false}, {"letter": "c", "text": "Loss of motor activity in the lower limbs", "is_correct": true}, {"letter": "d", "text": "Loss of touch sensation in the lower limbs", "is_correct": false}, {"letter": "e", "text": "Loss of superficial pain sensation", "is_correct": false}], "correct_answer": "c", "number": 20, "section": "Surgery"}, {"question": "Which of the following suture materials is the most suitable to use for closing the rectus sheath at the end of a laparotomy?", "options": [{"letter": "a", "text": "Chromic catgut size 2", "is_correct": false}, {"letter": "b", "text": "Vicryl (polyglycolide & polylactide)size 2", "is_correct": false}, {"letter": "c", "text": "Vicryl (polyglycolide & polylactide) size zero", "is_correct": false}, {"letter": "d", "text": "Prolene size 2", "is_correct": true}, {"letter": "e", "text": "Prolene size zero", "is_correct": false}], "correct_answer": "d", "number": 21, "section": "Surgery"}, {"question": "A cutting needle is used when suturing which of the following structures?", "options": [{"letter": "a", "text": "Peritoneum", "is_correct": false}, {"letter": "b", "text": "Muscles", "is_correct": false}, {"letter": "c", "text": "Subcutaneous fat", "is_correct": false}, {"letter": "d", "text": "Rectus sheath", "is_correct": false}, {"letter": "e", "text": "Skin", "is_correct": true}], "correct_answer": "e", "number": 22, "section": "Surgery"}, {"question": "A farmer presented to you with a 10 cm cut wound, which he sustained 12 hours ago while working. The proper management is", "options": [{"letter": "a", "text": "Immediate suturing", "is_correct": false}, {"letter": "b", "text": "Delayed primary suturing", "is_correct": true}, {"letter": "c", "text": "Secondary suturing", "is_correct": false}, {"letter": "d", "text": "Subcuticular suturing", "is_correct": false}, {"letter": "e", "text": "Use of tension sutures", "is_correct": false}], "correct_answer": "b", "number": 23, "section": "Surgery"}, {"question": "A young previously healthy patient developed pain, redness, and a serous discharge from an appendicectomy wound on the 3rd postoperative day. The most likely cause would be", "options": [{"letter": "a", "text": "Too tight sutures", "is_correct": false}, {"letter": "b", "text": "Leak of peritoneal fluid", "is_correct": false}, {"letter": "c", "text": "Wound infection", "is_correct": true}, {"letter": "d", "text": "Normal postoperative event", "is_correct": false}, {"letter": "e", "text": "Faecal fistula", "is_correct": false}], "correct_answer": "c", "number": 24, "section": "Surgery"}, {"question": "While performing an appendicectomy you found the appendix to be perforated with local sepsis. You removed it as usual and started to close your incision. You will", "options": [{"letter": "a", "text": "Close the layers one by one as usual", "is_correct": false}, {"letter": "b", "text": "Leave the peritoneum open, approximate the muscles, leave the skin open", "is_correct": true}, {"letter": "c", "text": "Leave the peritoneum open, leave the muscles without approximation, and close the skin", "is_correct": false}, {"letter": "d", "text": "Leave the wound completely open", "is_correct": false}, {"letter": "e", "text": "Close the peritoneum, leave the muscles and close the skin", "is_correct": false}], "correct_answer": "b", "number": 25, "section": "Surgery"}, {"question": "The most important aspect of treatment of an infected wound postoperatively is", "options": [{"letter": "a", "text": "Broad spectrum antibiotics", "is_correct": false}, {"letter": "b", "text": "Culture and sensitivity then antibiotics", "is_correct": false}, {"letter": "c", "text": "Local antibiotics", "is_correct": false}, {"letter": "d", "text": "Suture removal and frequent dressings", "is_correct": true}, {"letter": "e", "text": "Referral  to a specialised unit e.g. plastic surgery", "is_correct": false}], "correct_answer": "d", "number": 26, "section": "Surgery"}, {"question": "The haemoglobin of a patient who is to undergo an elective surgery should be", "options": [{"letter": "a", "text": "Not less than 50%", "is_correct": false}, {"letter": "b", "text": "Around 60%", "is_correct": false}, {"letter": "c", "text": "More than 70%", "is_correct": true}, {"letter": "d", "text": "Not less than 90%", "is_correct": false}, {"letter": "e", "text": "Of any value as it does not affect the course of the operation", "is_correct": false}], "correct_answer": "c", "number": 27, "section": "Surgery"}, {"question": "The following operations necessitate the preparation of blood, except", "options": [{"letter": "a", "text": "Mastectomy", "is_correct": false}, {"letter": "b", "text": "Laparotomy", "is_correct": false}, {"letter": "c", "text": "Above knee amputation", "is_correct": false}, {"letter": "d", "text": "Repair of a huge inguinal hernia", "is_correct": true}, {"letter": "e", "text": "Repair of a huge incisional hernia", "is_correct": false}], "correct_answer": "d", "number": 28, "section": "Surgery"}, {"question": "When performing a below knee amputation, the tibia should be cut about", "options": [{"letter": "a", "text": "Less than 5 cm from the tibial tuberosity", "is_correct": false}, {"letter": "b", "text": "10-15 cm from the tibial tuberosity", "is_correct": true}, {"letter": "c", "text": "At least 20 cm from the tibial tuberosity", "is_correct": false}, {"letter": "d", "text": "Shorter than the fibula", "is_correct": false}, {"letter": "e", "text": "The same length as the fibula", "is_correct": false}], "correct_answer": "b", "number": 29, "section": "Surgery"}, {"question": "During an amputation the nerves should be", "options": [{"letter": "a", "text": "Cut with a sharp scalpel in line with the wound", "is_correct": false}, {"letter": "b", "text": "Cut with scissors in line with the wound", "is_correct": false}, {"letter": "c", "text": "Cut with scissors as deep as possible in the wound", "is_correct": false}, {"letter": "d", "text": "Cut with a sharp scalpel as deep as possible in the wound", "is_correct": true}, {"letter": "e", "text": "Cut with a diathermy at any level desired", "is_correct": false}], "correct_answer": "d", "number": 30, "section": "Surgery"}, {"question": "A patient underwent a below knee amputation six month ago with a smooth postoperative period and has started to use a prosthesis for two month now. He is complaining of a sharp electrifying pain in the stump precipitated by any pressure on it. The most likely cause would be", "options": [{"letter": "a", "text": "Deep seated infection", "is_correct": false}, {"letter": "b", "text": "Too short bones in the stump", "is_correct": false}, {"letter": "c", "text": "Neuroma (traumatic)", "is_correct": true}, {"letter": "d", "text": "Loose pieces of bone", "is_correct": false}, {"letter": "e", "text": "Implanted piece of suture material", "is_correct": false}], "correct_answer": "c", "number": 31, "section": "Surgery"}, {"question": "All of the following findings differentiate a direct from an indirect inguinal hernia except", "options": [{"letter": "a", "text": "Whether or not the hernia reaches the scrotum", "is_correct": true}, {"letter": "b", "text": "The relation of the neck of the sac to the inferior epigastric vessels", "is_correct": false}, {"letter": "c", "text": "The relation of the sac to the spermatic cord", "is_correct": false}, {"letter": "d", "text": "The way and direction by which the patient reduces the hernia", "is_correct": false}, {"letter": "e", "text": "Whether the hernia remains reduced after reduction and asking the patient", "is_correct": false}], "correct_answer": "a", "number": 32, "section": "Surgery"}, {"question": "A valid indication for intravenous replacement of potassium would be", "options": [{"letter": "a", "text": "Urgent correction required", "is_correct": false}, {"letter": "b", "text": "Symptomatic hypokalaemia", "is_correct": false}, {"letter": "c", "text": "A patient undergoing an elective surgery in two days time", "is_correct": false}, {"letter": "d", "text": "Postoperatively in a patient who a straight forward appendicectomy", "is_correct": false}, {"letter": "e", "text": "Both a and b above", "is_correct": true}], "correct_answer": "e", "number": 33, "section": "Surgery"}, {"question": "A fissure in ano primarily causes", "options": [{"letter": "a", "text": "Pain", "is_correct": true}, {"letter": "b", "text": "Itch", "is_correct": false}, {"letter": "c", "text": "Bleeding", "is_correct": false}, {"letter": "d", "text": "Back pain", "is_correct": false}, {"letter": "e", "text": "Perianal swelling", "is_correct": false}], "correct_answer": "a", "number": 34, "section": "Surgery"}, {"question": "Second degree internal haemorrhoids mainly cause", "options": [{"letter": "a", "text": "Pain", "is_correct": false}, {"letter": "b", "text": "Bleeding", "is_correct": true}, {"letter": "c", "text": "Perianal swelling", "is_correct": false}, {"letter": "d", "text": "Perianal pruritus", "is_correct": false}, {"letter": "e", "text": "Constipation", "is_correct": false}], "correct_answer": "b", "number": 35, "section": "Surgery"}, {"question": "The lesions of mycetoma are characteristically", "options": [{"letter": "a", "text": "Painful", "is_correct": false}, {"letter": "b", "text": "Painless", "is_correct": true}, {"letter": "c", "text": "Warm", "is_correct": false}, {"letter": "d", "text": "Cystic", "is_correct": false}, {"letter": "e", "text": "Hard", "is_correct": false}], "correct_answer": "b", "number": 36, "section": "Surgery"}, {"question": "The maximum amount of potassium chloride that can be put in one unit (500 ml) of intravenous fluid is", "options": [{"letter": "a", "text": "5 mmol", "is_correct": false}, {"letter": "b", "text": "10 mmol", "is_correct": false}, {"letter": "c", "text": "20 mmol", "is_correct": true}, {"letter": "d", "text": "30 mmol", "is_correct": false}, {"letter": "e", "text": "40 mmol", "is_correct": false}], "correct_answer": "c", "number": 37, "section": "Surgery"}, {"question": "When infusing potassium chloride to a patient without an ECG monitor, the maximum safe rate would be", "options": [{"letter": "a", "text": "10 mmol/ hour", "is_correct": false}, {"letter": "b", "text": "20 mmol/ hour", "is_correct": false}, {"letter": "c", "text": "30 mmol/ hour", "is_correct": false}, {"letter": "d", "text": "40 mmol/ hour", "is_correct": true}, {"letter": "e", "text": "50 mmol/ hour", "is_correct": false}], "correct_answer": "d", "number": 38, "section": "Surgery"}, {"question": "The amount of daily fluid requirement in a 70 kg male who is not taking orally is", "options": [{"letter": "a", "text": "30-40 ml/kg per day", "is_correct": false}, {"letter": "b", "text": "3-4 liters per day", "is_correct": false}, {"letter": "c", "text": "30-40 ml /kg per day plus ongoing losses e.g. vomitus", "is_correct": false}, {"letter": "d", "text": "30-40 ml/ kg per day plus ongoing losses plus the urine output of the day before", "is_correct": false}, {"letter": "e", "text": "30-40 ml/ kg per day plus the ongoing losses adjusted according to the vital", "is_correct": true}], "correct_answer": "e", "number": 39, "section": "Surgery"}, {"question": "The daily requirement of sodium and chloride can be given to a 70 kg fasting surgical patient postoperatively in the form of", "options": [{"letter": "a", "text": "One unit (500 ml) of normal saline per day", "is_correct": true}, {"letter": "b", "text": "Two units of normal saline per day", "is_correct": false}, {"letter": "c", "text": "Three units of normal saline per day", "is_correct": false}, {"letter": "d", "text": "Four units of normal saline per day", "is_correct": false}, {"letter": "e", "text": "Calculation of the deficit and giving it as sodium bicarbonate by slow", "is_correct": false}], "correct_answer": "a", "number": 40, "section": "Surgery"}, {"question": "What is the most common cause of dysphagia?", "options": [{"letter": "a", "text": "achalasia", "is_correct": false}, {"letter": "b", "text": "esophageal spasm", "is_correct": false}, {"letter": "c", "text": "a lower esophageal ring (Schatzki ring)", "is_correct": true}, {"letter": "d", "text": "nonspecific motor disorders", "is_correct": false}, {"letter": "e", "text": "an esophageal stricture", "is_correct": false}], "correct_answer": "c", "number": 41, "section": "Medicine"}, {"question": "What is malignant dysphagia usually related to?", "options": [{"letter": "a", "text": "a squamous cell carcinoma related to Barrett's esophagus", "is_correct": false}, {"letter": "b", "text": "an adenocarcinoma related to Barrett's esophagus", "is_correct": true}, {"letter": "c", "text": "a squamous cell carcinoma unrelated to Barrett's esophagus", "is_correct": false}, {"letter": "d", "text": "an adenocarcinoma unrelated to Barrett's esophagus", "is_correct": false}, {"letter": "e", "text": "none of the answers", "is_correct": false}], "correct_answer": "b", "number": 42, "section": "Medicine"}, {"question": "What is the drug of choice in the treatment of achalasia?", "options": [{"letter": "a", "text": "a nitroglycerin derivative", "is_correct": false}, {"letter": "b", "text": "a calcium channel blocker", "is_correct": true}, {"letter": "c", "text": "a benzodiazepine", "is_correct": false}, {"letter": "d", "text": "an antacid", "is_correct": false}, {"letter": "e", "text": "any of the answers", "is_correct": false}], "correct_answer": "b", "number": 43, "section": "Medicine"}, {"question": "Achalasia is characterized by which of the following?", "options": [{"letter": "a", "text": "transient relaxation of the lower esophageal sphincter", "is_correct": false}, {"letter": "b", "text": "decreased resting pressure of the lower esophageal sphincter", "is_correct": false}, {"letter": "c", "text": "abnormal production of H+ in the stomach leading to acid-induced damage in the lower and middle esophagus", "is_correct": false}, {"letter": "d", "text": "loss of peristalsis and relaxation of the lower esophageal sphincter", "is_correct": true}, {"letter": "e", "text": "none of the answers", "is_correct": false}], "correct_answer": "d", "number": 44, "section": "Medicine"}, {"question": "A 25-year-old male comes to your office with an I8-month history of chronic abdominal pain. The patient has seen several physicians and has been diagnosed as having a \"nervous stomach,\" irritable bowel syndrome, and \"depression.\" Associated with this abdominal pain for the last 3 months has been nonbloody diarrhea, anorexia, and a weight loss of 20 pounds. He has developed a painful area around the anus. On examination, the patient has diffuse abdominal tenderness. He looks thin and unwell. He has a tender, erythematous area in the right perirectal area. What is the most likely diagnosis?", "options": [{"letter": "a", "text": "irritable bowel syndrome", "is_correct": false}, {"letter": "b", "text": "Crohn's disease", "is_correct": true}, {"letter": "c", "text": "ulcerative colitis", "is_correct": false}, {"letter": "d", "text": "bacterial dysentery", "is_correct": false}, {"letter": "e", "text": "amebiasis", "is_correct": false}], "correct_answer": "b", "number": 45, "section": "Medicine"}, {"question": "Which of the following investigations is the most sensitive test for confirming the diagnosis in this patient?", "options": [{"letter": "a", "text": "sigmoidoscopy", "is_correct": false}, {"letter": "b", "text": "colonoscopy", "is_correct": false}, {"letter": "c", "text": "barium enema", "is_correct": true}, {"letter": "d", "text": "Computed tomography (CT) scan of the abdomen", "is_correct": false}, {"letter": "e", "text": "Magnetic resonance imaging (MRI) scan of the abdomen", "is_correct": false}], "correct_answer": "c", "number": 46, "section": "Medicine"}, {"question": "Which of the following drugs is the most appropriate initial therapy in the acute phase of the condition described in this case?", "options": [{"letter": "a", "text": "prednisone", "is_correct": true}, {"letter": "b", "text": "sulfasalazine", "is_correct": false}, {"letter": "c", "text": "metronidazole", "is_correct": false}, {"letter": "d", "text": "6-mercaptopurine", "is_correct": false}, {"letter": "e", "text": "azathioprine", "is_correct": false}], "correct_answer": "a", "number": 47, "section": "Medicine"}, {"question": "Which of the following statements regarding complications of the condition described in this Case is false?", "options": [{"letter": "a", "text": "rectal fissures, rectocutaneous fistulas, and perirectal abscesses are common complica- tions of this condition", "is_correct": false}, {"letter": "b", "text": "arthritis is sometimes seen as a complication of this condition", "is_correct": false}, {"letter": "c", "text": "erythema nodosum and pyoderma gangrenosum are sometimes found with this condition", "is_correct": false}, {"letter": "d", "text": "patients with this condition are not at increased risk of colorectal cancer", "is_correct": true}, {"letter": "e", "text": "none of the statements is false", "is_correct": false}], "correct_answer": "d", "number": 48, "section": "Surgery"}, {"question": "With which of the following conditions is obesity most commonly associated?", "options": [{"letter": "a", "text": "alveolar hypoventilation syndrome", "is_correct": false}, {"letter": "b", "text": "hypertension", "is_correct": true}, {"letter": "c", "text": "hyperlipidemia", "is_correct": false}, {"letter": "d", "text": "diabetes mellitus", "is_correct": false}, {"letter": "e", "text": "angina pectoris", "is_correct": false}], "correct_answer": "b", "number": 49, "section": "Medicine"}, {"question": "The use of severe calorie-restricted diets (800 kcal/day) has been responsible for many deaths. What is the most common cause of death in these cases?", "options": [{"letter": "a", "text": "sudden cardiac dealth, secondary to dysrhythmia", "is_correct": true}, {"letter": "b", "text": "congestive cardiac failure, secondary to anemia", "is_correct": false}, {"letter": "c", "text": "hepatic failure", "is_correct": false}, {"letter": "d", "text": "renal failure", "is_correct": false}, {"letter": "e", "text": "septicemia", "is_correct": false}], "correct_answer": "a", "number": 50, "section": "Medicine"}, {"question": "Which of the following theories has (have) been postulated to explain the physiology of obesity?", "options": [{"letter": "a", "text": "fat-cell theory", "is_correct": false}, {"letter": "b", "text": "lipoprotein-lipase theory", "is_correct": false}, {"letter": "c", "text": "thermogenesis-brown adipose tissue theory", "is_correct": false}, {"letter": "d", "text": "all of the answers", "is_correct": true}], "correct_answer": "d", "number": 51, "section": "Medicine"}, {"question": "A 37-year-old male comes to your office for assessment of \"skipping heart beats.\" These skipped beats have been a concern for the past 8 months. The patient reports no other symptoms accompanying these skipped beats. Specifically, he reports no increased sweating, no palpitations, no weight loss, no chest pain, no pleuritic pain, and no anxiety. On physical examination, his blood pressure is 100/70 mm Hg. On auscultation of his heart you observe that Sl and S2 are normal-there are no extra sounds or murmurs. You hear about 5 premature beats per minute. What is the most commonly encountered \"premature contraction?\"", "options": [{"letter": "a", "text": "a ventricular premature beat", "is_correct": false}, {"letter": "b", "text": "an atrial premature beat", "is_correct": true}, {"letter": "c", "text": "atrial flutter", "is_correct": false}, {"letter": "d", "text": "atrial fibrillation", "is_correct": false}], "correct_answer": "b", "number": 52, "section": "Medicine"}, {"question": "Most atrial premature beats discovered on clinical examination are:", "options": [{"letter": "a", "text": "associated with chronic obstructive pulmonary disease (COPD)", "is_correct": false}, {"letter": "b", "text": "completely benign", "is_correct": true}, {"letter": "c", "text": "associated with valvular heart disease", "is_correct": false}, {"letter": "d", "text": "associated with an increase in cardiovascular mortality", "is_correct": false}], "correct_answer": "b", "number": 53, "section": "Medicine"}, {"question": "Most ventricular premature beats discovered on clinical examination are:", "options": [{"letter": "a", "text": "associated with COPD", "is_correct": false}, {"letter": "b", "text": "completely benign", "is_correct": true}, {"letter": "c", "text": "associated with valvular heart disease", "is_correct": false}, {"letter": "d", "text": "associated with an increase in cardiovascular mortality", "is_correct": false}], "correct_answer": "b", "number": 54, "section": "Medicine"}, {"question": "A 51-year-old male comes to the Emergency Department with an acute episode of chest pain. He has a history of atrial fibrillation. On examination, his blood pressure is 80/60 mm Hg and his ventricular rate is approximately 160 bpm. He is in acute distress. His respiratory rate is 32 breaths/min. His electrocardio- gram (ECG) shows atrial fibrillation with a rapid ventricular response. What should your first step in management be?", "options": [{"letter": "a", "text": "digitalize the patient", "is_correct": false}, {"letter": "b", "text": "give the patient intravenous (IV) verapamil", "is_correct": false}, {"letter": "c", "text": "give the patient IV procainamide", "is_correct": false}, {"letter": "d", "text": "cardiovert the patient with a direct current (DC)", "is_correct": true}, {"letter": "e", "text": "start rapid IV hydration", "is_correct": false}], "correct_answer": "d", "number": 55, "section": "Medicine"}, {"question": "A 44-year-old white male comes to the Emergency Department complaining of palpitations. He denies chest pain and shortness of breath. There is no history of known heart disease or cardiac risk factors except for mild obesity. He does admit to drinking heavily the night before at an office retirement party. On physical examination, his blood pressure is 120/80 mm Hg and his ventricular rate is again 160 bpm. His ECG confirms atrial fibrillation with a rapid ventricular response. What should you do at this patient?", "options": [{"letter": "a", "text": "digitalize the patient", "is_correct": false}, {"letter": "b", "text": "treat the patient with IV verapamil", "is_correct": true}, {"letter": "c", "text": "treat the patient with IV procainamide", "is_correct": false}, {"letter": "d", "text": "cardiovert the patient", "is_correct": false}, {"letter": "e", "text": "have him perform a Valsalva maneuver by rebreathing into a paper bag", "is_correct": false}], "correct_answer": "b", "number": 56, "section": "Medicine"}, {"question": "What is the recommended treatment for paroxysmal supraventricular tachycardia (PSVT) with hemodynamic compromise?", "options": [{"letter": "a", "text": "synchronized cardioversion", "is_correct": false}, {"letter": "b", "text": "DC countershock", "is_correct": false}, {"letter": "c", "text": "IV adenosine", "is_correct": true}, {"letter": "d", "text": "IV verapamil", "is_correct": false}, {"letter": "e", "text": "IV digoxin", "is_correct": false}], "correct_answer": "c", "number": 57, "section": "Medicine"}, {"question": "A 65-year old female is admitted to the Emergency Department with a three hours history of cyanotic shortness of breath, and substernal chest pain. She had been discharged 5 days earlier after having a total hip replacement for severe osteoarthritis. The hip surgery was uneventful. On physical examination, the patient is in obvious acute respiratory distress. Her respiratory rate is 40 breaths/min and her breathing is labored. Her blood pressure is 100/70 mm Hg. Cyanosis is present. There appear to be decreased breath sounds in the lower lobe of the right lung, as well as adventitious breath sounds in all lobes. 18. Based on the information provided, what is the most likely diagnosis in this patient?", "options": [{"letter": "a", "text": "fat embolus", "is_correct": false}, {"letter": "b", "text": "acute myocardial infarction", "is_correct": false}, {"letter": "c", "text": "dissecting aortic aneurysm", "is_correct": false}, {"letter": "d", "text": "acute pulmonary embolism", "is_correct": true}, {"letter": "e", "text": "cholesterol emboli syndrome", "is_correct": false}], "correct_answer": "d", "number": 58, "section": "Medicine"}, {"question": "Which of the following scintigraphic findings is most sensitive in diagnosing the condition just described?", "options": [{"letter": "a", "text": "no perfusion defects", "is_correct": false}, {"letter": "b", "text": "two or more medium to large perfusion defects with no V /Q mismatch", "is_correct": false}, {"letter": "c", "text": "two or more medium to large perfusion defects with V /Q mismatch", "is_correct": true}, {"letter": "d", "text": "a single medium or large perfusion defect with V /Q mismatch", "is_correct": false}], "correct_answer": "c", "number": 59, "section": "Medicine"}, {"question": "On clinical examination of a patient with the precursor condition leading to the ultimate diagnosis as just described, which of the following statements is true?", "options": [{"letter": "a", "text": "clinical examination is diagnostic in every case", "is_correct": false}, {"letter": "b", "text": "clinical examination is, in most cases, diagnostic", "is_correct": false}, {"letter": "c", "text": "clinical examination is of some value but has low sensitivity and low specificity", "is_correct": true}, {"letter": "d", "text": "clinical examination is of no value", "is_correct": false}, {"letter": "e", "text": "nobody really knows for sure", "is_correct": false}], "correct_answer": "c", "number": 60, "section": "Medicine"}, {"question": "Which of the following blood gas combinations occurs most commonly in the condition just described?", "options": [{"letter": "a", "text": "decreased P02 and decreased PC02", "is_correct": true}, {"letter": "b", "text": "decreased P02 and increased PC02", "is_correct": false}, {"letter": "c", "text": "increased P02 and increased PC02", "is_correct": false}, {"letter": "d", "text": "increased P02 and decreased PC02", "is_correct": false}], "correct_answer": "a", "number": 61, "section": "Medicine"}, {"question": "What is the most common cause of morbidity and mortality among hospitalized immobile patients?", "options": [{"letter": "a", "text": "myocardial infarction", "is_correct": false}, {"letter": "b", "text": "cerebrovascular accident", "is_correct": false}, {"letter": "c", "text": "deep venous thrombosis (DVT) / pulmonary embolism (PE)", "is_correct": true}, {"letter": "d", "text": "nosocomial infection", "is_correct": false}], "correct_answer": "c", "number": 62, "section": "Medicine"}, {"question": "What is (are) the drug(s) of choice for patients with a documented pulmonary embolus?", "options": [{"letter": "a", "text": "continuous intravenous (IV) heparin", "is_correct": false}, {"letter": "b", "text": "intermittent IV heparin", "is_correct": false}, {"letter": "c", "text": "intermittent subcutaneous heparin", "is_correct": false}, {"letter": "d", "text": "any of the answers", "is_correct": true}], "correct_answer": "d", "number": 63, "section": "Medicine"}, {"question": "Which of the following is evidence of adequate anticoagulation with heparin in patients with DVT/PE?", "options": [{"letter": "a", "text": "partial thromboplastin time (PTT) 1.2 times that of the control", "is_correct": false}, {"letter": "b", "text": "PTT 1.4 times that of the control", "is_correct": false}, {"letter": "c", "text": "PTT 1.5 to 2.0 times that of the control", "is_correct": true}, {"letter": "d", "text": "PTT 2.0 to 3.0 times that of the control", "is_correct": false}], "correct_answer": "c", "number": 64, "section": "Medicine"}, {"question": "What is the diagnostic procedure of choice for a patient who comes to the Emergency Department with \"a swollen leg\" and has one or more of the following risk factors: prolong immobilization, long leg fracture, pregnancy and malignancy?", "options": [{"letter": "a", "text": "pulmonary angiography", "is_correct": false}, {"letter": "b", "text": "pelvic vein ultrasound", "is_correct": false}, {"letter": "c", "text": "impedance plethysmography", "is_correct": false}, {"letter": "d", "text": "V IQ scan", "is_correct": true}, {"letter": "e", "text": "MRI scan", "is_correct": false}], "correct_answer": "d", "number": 65, "section": "Surgery"}, {"question": "A 24-year-old woman develops wheezing and shortness of breath when she is exposed to cold air or when she is exercising. These symptoms are becoming worse. 26. Which of the following is the prophylactic agent of choice for the treatment of asthma in these circumstances?", "options": [{"letter": "a", "text": "inhaled β2-agonists", "is_correct": true}, {"letter": "b", "text": "oral aminophylline", "is_correct": false}, {"letter": "c", "text": "inhaled anticholinergics", "is_correct": false}, {"letter": "d", "text": "inhaled sodium cromoglycate", "is_correct": false}, {"letter": "e", "text": "oral corticosteroids", "is_correct": false}], "correct_answer": "a", "number": 66, "section": "Medicine"}, {"question": "A 25-year-old schoolteacher comes to a walk-in clinic with nausea, vomiting, anorexia, aversion to her usual two-pack-a-day tobacco habit, and right upper quadrant pain. She has been sick for the past 3 days. Two of the students in her class have corne down with similar symptoms. She has had no exposure to blood products and has no other significant risk factors for sexually transmitted disease. On examination, her sclerae are icteric and her liver edge is tender. She looks acutely ill. 27. What is the most likely diagnosis in this patient?", "options": [{"letter": "a", "text": "hepatitis A", "is_correct": true}, {"letter": "b", "text": "hepatitis B", "is_correct": false}, {"letter": "c", "text": "hepatitis C", "is_correct": false}, {"letter": "d", "text": "atypical infectious mononucleosis", "is_correct": false}], "correct_answer": "a", "number": 67, "section": "Medicine"}, {"question": "Which of the following tests is the most sensitive in confirming the diagnosis suspected in this patient?", "options": [{"letter": "a", "text": "anti-hepatitis A virus (HAV)-immunoglobulin G (IgG)", "is_correct": false}, {"letter": "b", "text": "anti-HAV-irnrnunoglobulin M (IgM)", "is_correct": true}, {"letter": "c", "text": "HA V core antigen", "is_correct": false}, {"letter": "d", "text": "anti-hepatitis B core antigen (HBcAg)", "is_correct": false}, {"letter": "e", "text": "anti-hepatitis C virus (HCV)", "is_correct": false}], "correct_answer": "b", "number": 68, "section": "Medicine"}, {"question": "Initial screening for hepatitis B should include which of the following?", "options": [{"letter": "a", "text": "anti-hepatitis B surface antigen (HBsAg) and anti-HBc", "is_correct": false}, {"letter": "b", "text": "hepatitis B early antigen (HBeAg) and anti HBe", "is_correct": false}, {"letter": "c", "text": "HBsAg and anti-HBs", "is_correct": false}, {"letter": "d", "text": "HBsAg and anti-HBc", "is_correct": true}, {"letter": "e", "text": "anti-HBe and anti-HBc", "is_correct": false}], "correct_answer": "d", "number": 69, "section": "Medicine"}, {"question": "A 75-year-old male diagnosed with stage 0 cancer of the prostate 6 months ago comes to your office. He has been asymptomatic for the past 6 months, but last week he began to develop severe pain in the lower lumbar spine. He also appears quite pale. On examination his prostate is rock-hard. He has tender lumbar ,yertebrae L2 to L5. Your suspicions of metastatic bone disease are confirmed when a technetium-99 bone scan shows increased uptake of radionuclide in L2-LS and in both femurs, both tibias, and both humeri. 30. What is the treatment of first choice at this time?", "options": [{"letter": "a", "text": "high-dose morphine sulfate", "is_correct": false}, {"letter": "b", "text": "high-dose hydromorphone", "is_correct": false}, {"letter": "c", "text": "trans dermal fentanyl", "is_correct": false}, {"letter": "d", "text": "palliative radiotherapy to the lumbar spine", "is_correct": true}, {"letter": "e", "text": "acetaminophen-hydrocodone", "is_correct": false}], "correct_answer": "d", "number": 70, "section": "Medicine"}, {"question": "You institute appropriate therapy for this patient. He quickly becomes pain free and remains that way for 6 months. He then returns with cervical, thoracic, and lumbar back pain; bilateral thigh pain; bilateral knee and leg pain; and pain in both shoulders and both arms (diffuse). Therapeutic options at this time include which of the following?", "options": [{"letter": "a", "text": "intravenous (IV) chlodrinate", "is_correct": false}, {"letter": "b", "text": "IV radioactive strontium", "is_correct": false}, {"letter": "c", "text": "morphine sulfate", "is_correct": false}, {"letter": "d", "text": "hydromorphone", "is_correct": false}, {"letter": "e", "text": "all of the answers", "is_correct": true}], "correct_answer": "e", "number": 71, "section": "Medicine"}, {"question": "Which of the following pharmacologic agents is the drug of first choice for the treatment of mild metastatic bone pain?", "options": [{"letter": "a", "text": "morphine sulfate", "is_correct": false}, {"letter": "b", "text": "hydromorphone", "is_correct": false}, {"letter": "c", "text": "fentanyl", "is_correct": false}, {"letter": "d", "text": "nonsteroidal antiinflammatory drug (NSAID)", "is_correct": true}, {"letter": "e", "text": "carbamazepine", "is_correct": false}], "correct_answer": "d", "number": 72, "section": "Medicine"}, {"question": "A patient is being treated for breast cancer with adjuvant chemotherapy after a lumpectomy. One of the drugs she is taking is cisplatin. She develops intractable nausea and vomiting while on this drug. Which of the following antiemetics is the drug of first choice for this patient?", "options": [{"letter": "a", "text": "prochlorperazine", "is_correct": false}, {"letter": "b", "text": "ondansetron", "is_correct": true}, {"letter": "c", "text": "dimenhydrinate", "is_correct": false}, {"letter": "d", "text": "metoclopramide", "is_correct": false}, {"letter": "e", "text": "dexamethasone", "is_correct": false}], "correct_answer": "b", "number": 73, "section": "Medicine"}, {"question": "A 17-year-old female comes to your office with her mother. Her mother tells you that her daughter has lost 20 pounds in the last 6 months. In addition, she has been increasingly thirsty and has been experiencing a significantly increased frequency of urination. The patient has been feeling generally well, but she complains that her breath smells \"funny.\" On examination, the patient is well below the fifth percentile for weight. She looks thin and pale. Her blood pressure is 100/70 mm Hg. She has a few anterior cervical and axillary nodes measuring 1.0 cm. Her abdomen is slightly tender. No other abnormalities are found. 34. If you could order only one test, which would it be?", "options": [{"letter": "a", "text": "urine for protein and glucose", "is_correct": false}, {"letter": "b", "text": "fingerstick blood sugar level", "is_correct": true}, {"letter": "c", "text": "serum electrolytes", "is_correct": false}, {"letter": "d", "text": "blood gases", "is_correct": false}, {"letter": "e", "text": "complete blood count", "is_correct": false}], "correct_answer": "b", "number": 74, "section": "Medicine"}, {"question": "Which of the following statements regarding the diagnosis of the above disorder is (are) true?", "options": [{"letter": "a", "text": "this disorder is confirmed if the fasting level of the particular substance exceeds 125 mg/ dl on two occasions", "is_correct": false}, {"letter": "b", "text": "this disorder is confirmed if the venous plasma level of the particular substance exceeds 200 mg/ dl on one occasion in the presence of symptoms", "is_correct": false}, {"letter": "c", "text": "this disorder is confirmed if, following a 3-hour test, two values measuring the particu- lar substance exceed 200 mg/ dl", "is_correct": false}, {"letter": "d", "text": "all of the answers", "is_correct": true}], "correct_answer": "d", "number": 75, "section": "Medicine"}, {"question": "Which of the following conditions is most closely associated with the described disorder?", "options": [{"letter": "a", "text": "hypercholesterolemia", "is_correct": false}, {"letter": "b", "text": "hypothyroidism", "is_correct": false}, {"letter": "c", "text": "hypertriglyceridemia", "is_correct": true}, {"letter": "d", "text": "obesity", "is_correct": false}, {"letter": "e", "text": "cholelithiasis", "is_correct": false}], "correct_answer": "c", "number": 76, "section": "Medicine"}, {"question": "What is the best measure of long-term control of the disease described?", "options": [{"letter": "a", "text": "urine sugar levels", "is_correct": false}, {"letter": "b", "text": "daily blood sugar levels (3 or 4 times per day)", "is_correct": false}, {"letter": "c", "text": "hemoglobin AlC", "is_correct": true}, {"letter": "d", "text": "hemoglobin F", "is_correct": false}, {"letter": "e", "text": "no microvascular or macrovascular complications", "is_correct": false}], "correct_answer": "c", "number": 77, "section": "Medicine"}, {"question": "The hemoglobin AIC should be below what value to be of use in predicting the develop- ment of microvascular and macrovascular complications?", "options": [{"letter": "a", "text": "3.5%", "is_correct": false}, {"letter": "b", "text": "5.0%", "is_correct": false}, {"letter": "c", "text": "7.2%", "is_correct": true}, {"letter": "d", "text": "9.0%", "is_correct": false}, {"letter": "e", "text": "10.0%", "is_correct": false}], "correct_answer": "c", "number": 78, "section": "Medicine"}, {"question": "A 27-year-old type 1 diabetic comes to your office for her regular 3-month checkup. Your urine dipstick shows proteinuria. A 24-hour urine measurement produces a protein reading of 150 mg. 39. What should your next management step be?", "options": [{"letter": "a", "text": "do nothing; this is microalburninuria", "is_correct": false}, {"letter": "b", "text": "do nothing; this is still considered normal", "is_correct": false}, {"letter": "c", "text": "start the patient on an angiotensin-converting enzyme (ACE) inhibitor", "is_correct": true}, {"letter": "d", "text": "change the patient's diet-decrease protein by 10% a day", "is_correct": false}, {"letter": "e", "text": "refer the patient to a diabetologist", "is_correct": false}], "correct_answer": "c", "number": 79, "section": "Medicine"}, {"question": "Which one of the following statements regarding diet and diabetes is false?", "options": [{"letter": "a", "text": "diet is basic in the treatment of all diabetics", "is_correct": false}, {"letter": "b", "text": "new evidence suggests that diabetics do not have to avoid foods that contain simple car- bohydrates", "is_correct": true}, {"letter": "c", "text": "the diabetic on insulin therapy must have three meals plus a bedtime snack at fixed times each day", "is_correct": false}, {"letter": "d", "text": "the diabetic on insulin therapy should have frequent snacks", "is_correct": false}, {"letter": "e", "text": "the diabetic on insulin should have a fixed caloric distribution", "is_correct": false}], "correct_answer": "b", "number": 80, "section": "Medicine"}, {"question": "What is the average starting insulin dose for a newly diagnosed diabetic?", "options": [{"letter": "a", "text": "2 to 4 units", "is_correct": false}, {"letter": "b", "text": "6 to 8 units", "is_correct": false}, {"letter": "c", "text": "10 to 12 units", "is_correct": false}, {"letter": "d", "text": "15 to 20 units", "is_correct": true}, {"letter": "e", "text": "20 to 30 units", "is_correct": false}], "correct_answer": "d", "number": 81, "section": "Medicine"}, {"question": "A 24-year-old male comes to your office with an extreme feeling of weakness, a 20-pound weight loss, a change in the color of his skin (his skin has become very hyperpigmented), lightheadedness, and dizziness. On examination, the patient has a definite change in skin color since you last saw him 9 months ago. His blood pressure is 90170 mm Hg and he looks acutely ill. On laboratory examination, his serum Na + level is low (115 mEq/L); his serum potassium level is high (6.2 mEq/L); his urea level is elevated at 9.0 mg/dl; and his serum calcium level is elevated (12.0 mgl dl). 42. On the basis of this history, physical examination, and laboratory findings, what is the most likely diagnosis of this patient?", "options": [{"letter": "a", "text": "Conn's syndrome", "is_correct": false}, {"letter": "b", "text": "Cushing's syndrome", "is_correct": false}, {"letter": "c", "text": "Addison's syndrome", "is_correct": true}, {"letter": "d", "text": "primary hyperparathyroidism", "is_correct": false}, {"letter": "e", "text": "primary pituitary failure", "is_correct": false}], "correct_answer": "c", "number": 82, "section": "Medicine"}, {"question": "What is the most likely cause for this patient's symptoms?", "options": [{"letter": "a", "text": "overstimulation of the adrenal gland", "is_correct": false}, {"letter": "b", "text": "an adrenal adenoma", "is_correct": false}, {"letter": "c", "text": "autoimmune destruction of the hyperparathyroid glands", "is_correct": false}, {"letter": "d", "text": "autoimmune destruction of the adrenal gland", "is_correct": true}, {"letter": "e", "text": "a pituitary adenoma", "is_correct": false}], "correct_answer": "d", "number": 83, "section": "Medicine"}, {"question": "What is the acute treatment of choice for this patient?", "options": [{"letter": "a", "text": "prednisone orally", "is_correct": false}, {"letter": "b", "text": "dexamethasone orally", "is_correct": false}, {"letter": "c", "text": "intravenous (IV) cortisol", "is_correct": true}, {"letter": "d", "text": "IV ACTH", "is_correct": false}, {"letter": "e", "text": "intramuscular (1M) depo-provera", "is_correct": false}], "correct_answer": "c", "number": 84, "section": "Medicine"}, {"question": "Ovulation is associated with:", "options": [{"letter": "a", "text": "Low oestradiol level.", "is_correct": false}, {"letter": "b", "text": "Two degrees rise in body temperature.", "is_correct": false}, {"letter": "c", "text": "a prior 24 hrs rise of progesterone.", "is_correct": false}, {"letter": "d", "text": "L H surge which occurs 38 hrs before.", "is_correct": true}, {"letter": "e", "text": "copious watery vaginal discharge. Primary amenorrhea is due to:", "is_correct": false}], "correct_answer": "d", "number": 85, "section": "OB/GYN"}, {"question": "Primary amenorrhea is due to:", "options": [{"letter": "a", "text": "high Gn RL", "is_correct": false}, {"letter": "b", "text": "Anorexia nervosa", "is_correct": false}, {"letter": "c", "text": "Hypoprolactinaemia.", "is_correct": false}, {"letter": "d", "text": "Sheehan disease.", "is_correct": false}, {"letter": "e", "text": "Congenitally absent uterus.", "is_correct": true}], "correct_answer": "e", "number": 86, "section": "OB/GYN"}, {"question": "A 28 years old married female reported with 50 days of secondary amenorrhea. The following is the best test for diagnosis:", "options": [{"letter": "a", "text": "Progesterone blood level.", "is_correct": false}, {"letter": "b", "text": "Prolactin blood level.", "is_correct": false}, {"letter": "c", "text": "Circulating B subunit of h c G", "is_correct": true}, {"letter": "d", "text": "L H & FSH hormone level", "is_correct": false}, {"letter": "e", "text": "Ultrasonography.", "is_correct": false}], "correct_answer": "c", "number": 87, "section": "OB/GYN"}, {"question": "A 20 years old female reported complaining of failure to conceive one year after her marriage. The first diagnostic test to be done is:", "options": [{"letter": "a", "text": "U.S", "is_correct": false}, {"letter": "b", "text": "Hysteroscopy.", "is_correct": false}, {"letter": "c", "text": "Semen analysis.", "is_correct": true}, {"letter": "d", "text": "Hysterosalpingraphy.", "is_correct": false}, {"letter": "e", "text": "Endometrial biopsy for histopathology. Polycystic ovarian syndrome presents as:", "is_correct": false}], "correct_answer": "c", "number": 88, "section": "OB/GYN"}, {"question": "Polycystic ovarian syndrome presents as:", "options": [{"letter": "a", "text": "Infertility.", "is_correct": false}, {"letter": "b", "text": "Metrorrhagia.", "is_correct": false}, {"letter": "c", "text": "Amenorrhea.", "is_correct": true}, {"letter": "d", "text": "Galactorrhoea.", "is_correct": false}, {"letter": "e", "text": "Loss of body hair.", "is_correct": false}], "correct_answer": "c", "number": 89, "section": "OB/GYN"}, {"question": "Miscarriage or pregnancy loss:", "options": [{"letter": "a", "text": "Occurs in about 25-40% of all pregnancies.", "is_correct": false}, {"letter": "b", "text": "is defined as termination of pregnancy before 28th week of gestation.", "is_correct": true}, {"letter": "c", "text": "Does not increase maternal mortality rate.", "is_correct": false}, {"letter": "d", "text": "Tends to become recurrent.", "is_correct": false}, {"letter": "e", "text": "Is associated with mental disorders. Miscarriage is caused by:", "is_correct": false}], "correct_answer": "b", "number": 90, "section": "OB/GYN"}, {"question": "Miscarriage is caused by:", "options": [{"letter": "a", "text": "E. coli.", "is_correct": false}, {"letter": "b", "text": "Cervical stenosis.", "is_correct": false}, {"letter": "c", "text": "Hypersecretion of LH.", "is_correct": false}, {"letter": "d", "text": "Hyperoestrogenaemia.", "is_correct": false}, {"letter": "e", "text": "Plasmodium falciparum. Missed abortion is associated with:", "is_correct": true}], "correct_answer": "e", "number": 91, "section": "OB/GYN"}, {"question": "Missed abortion is associated with:", "options": [{"letter": "a", "text": "High levels of h C G.", "is_correct": false}, {"letter": "b", "text": "An enlarged uterus.", "is_correct": false}, {"letter": "c", "text": "A normal gestation sac.", "is_correct": false}, {"letter": "d", "text": "Absent foetal heart on ultrasound.", "is_correct": true}, {"letter": "e", "text": "A brownish vaginal discharge. Ectopic pregnancy:", "is_correct": false}], "correct_answer": "d", "number": 92, "section": "OB/GYN"}, {"question": "Ectopic pregnancy:", "options": [{"letter": "a", "text": "Is a leading cause of maternal mortality in the first trimester.", "is_correct": true}, {"letter": "b", "text": "Commonly occurs in the ovary and peritoneum.", "is_correct": false}, {"letter": "c", "text": "Is caused by the rapidly growing fertilized ovum.", "is_correct": false}, {"letter": "d", "text": "Usually presents with mild symptoms.", "is_correct": false}, {"letter": "e", "text": "|is treated conservatively in 90% of eases.", "is_correct": false}], "correct_answer": "a", "number": 93, "section": "OB/GYN"}, {"question": "A woman in the reproductive age suffering from infertility due to polycystic ovary disease is best treated by:", "options": [{"letter": "a", "text": "Cryosurgery of the ovary.", "is_correct": false}, {"letter": "b", "text": "Climophine citrate tabs.", "is_correct": true}, {"letter": "c", "text": "Rupture of the cyst by cautery.", "is_correct": false}, {"letter": "d", "text": "Wedge resection of the ovaries.", "is_correct": false}, {"letter": "e", "text": "Weight reduction. During the first trimester of pregnancy the following is true:", "is_correct": false}], "correct_answer": "b", "number": 94, "section": "OB/GYN"}, {"question": "During the first trimester of pregnancy the following is true:", "options": [{"letter": "a", "text": "There is a significant increase in the heart rate.", "is_correct": true}, {"letter": "b", "text": "The total cardiac output increases by 25 percent.", "is_correct": false}, {"letter": "c", "text": "As a result of the increase of the blood volume there is haemodilution.", "is_correct": false}, {"letter": "d", "text": "The blood pressure rises by 10-15 degrees.", "is_correct": false}, {"letter": "e", "text": "There is a marked increase in the thyroid function.", "is_correct": false}], "correct_answer": "a", "number": 95, "section": "OB/GYN"}, {"question": "The following is a cause of congenital malformation when taken  during early pregnancy:", "options": [{"letter": "a", "text": "Tetracycline.", "is_correct": false}, {"letter": "b", "text": "17 hydroxyprogesterone.", "is_correct": false}, {"letter": "c", "text": "Methotrexate.", "is_correct": true}, {"letter": "d", "text": "Folic acid.", "is_correct": false}, {"letter": "e", "text": "Testosterone. Antepartum haemorrhage:", "is_correct": false}], "correct_answer": "c", "number": 96, "section": "OB/GYN"}, {"question": "Antepartum haemorrhage:", "options": [{"letter": "a", "text": "is any bleeding from the genital tract after 28 weeks of gestation?", "is_correct": true}, {"letter": "b", "text": "is a leading cause of maternal mortality in Europe.", "is_correct": false}, {"letter": "c", "text": "does not affect foetal morbidity& mortality.", "is_correct": false}, {"letter": "d", "text": "is not associated with a rise of blood pressure.", "is_correct": false}, {"letter": "e", "text": "is not affected by blood dyscrasias.", "is_correct": false}], "correct_answer": "a", "number": 97, "section": "OB/GYN"}, {"question": "The following are documented risk factors for placenta praevia except:", "options": [{"letter": "a", "text": "Previous caesarean section.", "is_correct": false}, {"letter": "b", "text": "Multiple pregnancy.", "is_correct": false}, {"letter": "c", "text": "Primigravidity.", "is_correct": true}, {"letter": "d", "text": "Previous dilatation & curettage.", "is_correct": false}, {"letter": "e", "text": "Spontaneous abortion & evacuation. Placenta praevia presents with:", "is_correct": false}], "correct_answer": "c", "number": 98, "section": "OB/GYN"}, {"question": "Placenta praevia presents with:", "options": [{"letter": "a", "text": "Acute abdominal pain.", "is_correct": false}, {"letter": "b", "text": "Heavy vaginal bleeding.", "is_correct": false}, {"letter": "c", "text": "Absent foetal heart.", "is_correct": false}, {"letter": "d", "text": "Abnormal foetal presentation and lie.", "is_correct": true}, {"letter": "e", "text": "Tense and tender abdomen. The most accurate method of diagnosing placenta praevia is:", "is_correct": false}], "correct_answer": "d", "number": 99, "section": "OB/GYN"}, {"question": "The most accurate method of diagnosing placenta praevia is:", "options": [{"letter": "a", "text": "Transabdominal ultrasonography.", "is_correct": false}, {"letter": "b", "text": "Clinical obstetric examination.", "is_correct": false}, {"letter": "c", "text": "Vaginal examination in the theatre under anesthesia.", "is_correct": true}, {"letter": "c", "text": "X-Ray of the pelvis- standing lateral.", "is_correct": false}, {"letter": "d", "text": "Transvaginal ultrasonography.", "is_correct": false}], "correct_answer": "c", "number": 100, "section": "OB/GYN"}, {"question": "The main principles of management in the obvious case of placental abruption are the following except:", "options": [{"letter": "a", "text": "Adequate blood transfusion.", "is_correct": false}, {"letter": "b", "text": "Adequate analgesia.", "is_correct": false}, {"letter": "c", "text": "Delivery after 36 weeks of gestation.", "is_correct": true}, {"letter": "d", "text": "Detailed monitoring of maternal condition.", "is_correct": false}, {"letter": "e", "text": "Assessment of foetal condition. Placental abruption:", "is_correct": false}], "correct_answer": "c", "number": 101, "section": "OB/GYN"}, {"question": "Placental abruption:", "options": [{"letter": "a", "text": "is associated with malpresentation.", "is_correct": false}, {"letter": "b", "text": "is the premature separation of a normally sited placenta.", "is_correct": true}, {"letter": "c", "text": "can not be diagnosed on clinical evidence.", "is_correct": false}, {"letter": "d", "text": "inevitably needs confirmation by ultrasonography.", "is_correct": false}, {"letter": "e", "text": "does not lead to hypofibrinoginaemia.", "is_correct": false}], "correct_answer": "b", "number": 102, "section": "OB/GYN"}, {"question": "Placental abruption is associated with the following risk factors except:", "options": [{"letter": "a", "text": "Hypertension and PIH.", "is_correct": false}, {"letter": "b", "text": "Advanced maternal age.", "is_correct": false}, {"letter": "c", "text": "Heart disease during pregnancy.", "is_correct": true}, {"letter": "d", "text": "Grandmultiparity and chorioamnionitis.", "is_correct": false}, {"letter": "e", "text": "Cigarette smoking.", "is_correct": false}], "correct_answer": "c", "number": 103, "section": "OB/GYN"}, {"question": "Bleeding from the following condition is not a serious threat to maternal life:", "options": [{"letter": "a", "text": "Placenta praevia.", "is_correct": false}, {"letter": "b", "text": "Hypofibrinogaemia.", "is_correct": false}, {"letter": "c", "text": "Vasa praevia.", "is_correct": true}, {"letter": "d", "text": "Ruptured ectopic pregnancy.", "is_correct": false}, {"letter": "e", "text": "Placenta increta.", "is_correct": false}], "correct_answer": "c", "number": 104, "section": "OB/GYN"}, {"question": "Maternal mortality ratio is:", "options": [{"letter": "a", "text": "The number of women who die during birth in one year.", "is_correct": false}, {"letter": "b", "text": "The number of female deaths in the reproductive age per 100,000 births.", "is_correct": false}, {"letter": "c", "text": "The number of deaths of women in relation to pregnancy and child birth per 100,000 live birth.", "is_correct": true}, {"letter": "d", "text": "The number of female deaths due to direct obstetrical causes expressed per 1000 births.", "is_correct": false}, {"letter": "e", "text": "The number of female deaths during pregnancy after the 28th week of gestation,", "is_correct": false}], "correct_answer": "c", "number": 105, "section": "OB/GYN"}, {"question": "The following is not a direct cause of maternal mortality:", "options": [{"letter": "a", "text": "Bleeding from ruptured ectopic pregnancy.", "is_correct": false}, {"letter": "b", "text": "Cerebral malaria during pregnancy.", "is_correct": true}, {"letter": "c", "text": "Eclampsia.", "is_correct": false}, {"letter": "d", "text": "Amniotic fluid embolism.", "is_correct": false}, {"letter": "e", "text": "Postpartum blecdmg.", "is_correct": false}], "correct_answer": "b", "number": 106, "section": "OB/GYN"}, {"question": "The following is not a common cause of maternal mortality in Sudan:", "options": [{"letter": "a", "text": "Eclampsia.", "is_correct": false}, {"letter": "b", "text": "Pulmonary embolism.", "is_correct": true}, {"letter": "c", "text": "Abortion.", "is_correct": false}, {"letter": "d", "text": "Placental abruption.", "is_correct": false}, {"letter": "e", "text": "Puerperal psychosis Stillbirth is caused by:", "is_correct": false}], "correct_answer": "b", "number": 107, "section": "OB/GYN"}, {"question": "Stillbirth is caused by:", "options": [{"letter": "a", "text": "anemia with pregnancy.", "is_correct": false}, {"letter": "b", "text": "placental abruption.", "is_correct": true}, {"letter": "c", "text": "malaria with pregnancy.", "is_correct": false}, {"letter": "d", "text": "rupture of the membranes at 35-36 week of gestation.", "is_correct": false}, {"letter": "e", "text": "exposure to radiation in early pregnancy.", "is_correct": false}], "correct_answer": "b", "number": 108, "section": "OB/GYN"}, {"question": "This is true about maternal mortality in Sudan:", "options": [{"letter": "a", "text": "It is estimated as 520 per 100,000 live birth.", "is_correct": true}, {"letter": "b", "text": "Its major cause is thrombi- embolism.", "is_correct": false}, {"letter": "c", "text": "It has been decreasing in the last ten years.", "is_correct": false}, {"letter": "d", "text": "AIDS is one of its major causes.", "is_correct": false}, {"letter": "e", "text": "Most of the deaths take place in hospitals.", "is_correct": false}], "correct_answer": "a", "number": 109, "section": "OB/GYN"}, {"question": "The following is not a risk factor associated with small for dates:", "options": [{"letter": "a", "text": "Advancing maternal age.", "is_correct": false}, {"letter": "b", "text": "Low socio-economic status.", "is_correct": false}, {"letter": "c", "text": "Cigarette smoking.", "is_correct": false}, {"letter": "d", "text": "Family history of diabetes mellitus.", "is_correct": true}, {"letter": "e", "text": "Chronic renal disease.", "is_correct": false}], "correct_answer": "d", "number": 110, "section": "Medicine"}, {"question": "The following is an indication for artificial rupture of membranes:", "options": [{"letter": "a", "text": "Placenta praevia type II Posterior.", "is_correct": false}, {"letter": "b", "text": "Prolonged first stage of labour in a patient with previous LSCS.", "is_correct": false}, {"letter": "c", "text": "Imminent eclampsia.", "is_correct": true}, {"letter": "d", "text": "Preterm labour at 35 weeks of gestation.", "is_correct": false}, {"letter": "e", "text": "Primigravida for a trial of lab our.", "is_correct": false}], "correct_answer": "c", "number": 111, "section": "OB/GYN"}, {"question": "The following is a cause of death in eclampsia:", "options": [{"letter": "a", "text": "Renal failure.", "is_correct": false}, {"letter": "b", "text": "Intracranial hemorrhage.", "is_correct": false}, {"letter": "c", "text": "Ketoacidosis.", "is_correct": true}, {"letter": "d", "text": "Maternal asphyxia.", "is_correct": false}, {"letter": "e", "text": "Heart failure.", "is_correct": false}], "correct_answer": "c", "number": 112, "section": "Medicine"}, {"question": "Normal spontaneous labour is initiated by the following:", "options": [{"letter": "a", "text": "Increasing level of oestrogen.", "is_correct": false}, {"letter": "b", "text": "Decreasing sensitivity of uterine muscle cells to oxytocin.", "is_correct": false}, {"letter": "c", "text": "Sustained rising level of progesterone.", "is_correct": false}, {"letter": "d", "text": "No single identifiable factor.", "is_correct": true}, {"letter": "e", "text": "Rising level of androgen produced by foetal adrenal gland.", "is_correct": false}], "correct_answer": "d", "number": 113, "section": "OB/GYN"}, {"question": "The following cause relaxation of uterine contraction:", "options": [{"letter": "a", "text": "Ferrous fumarate.", "is_correct": false}, {"letter": "b", "text": "Syntometrin.", "is_correct": false}, {"letter": "c", "text": "General  anaesthesia.", "is_correct": true}, {"letter": "d", "text": "Magnesium sulphate.", "is_correct": false}, {"letter": "e", "text": "Folic acid.", "is_correct": false}], "correct_answer": "c", "number": 114, "section": "Surgery"}, {"question": "The following is not a condition to be fulfilled when applying obstetric forceps:", "options": [{"letter": "a", "text": "Fully dilated cervix.", "is_correct": false}, {"letter": "b", "text": "The consent of the patient.", "is_correct": true}, {"letter": "c", "text": "Well known position of the occiput", "is_correct": false}, {"letter": "d", "text": "Ruptured membranes.", "is_correct": false}, {"letter": "e", "text": "Local or regional anaesthesia. Preterm labour:", "is_correct": false}], "correct_answer": "b", "number": 115, "section": "OB/GYN"}, {"question": "Preterm labour:", "options": [{"letter": "a", "text": "is lab our be four 39th week of gestation.", "is_correct": false}, {"letter": "b", "text": "is not related to physical trauma.", "is_correct": false}, {"letter": "c", "text": "has no identifiable single specific cause.", "is_correct": true}, {"letter": "d", "text": "can not be iatrogenic.", "is_correct": false}, {"letter": "e", "text": "is related to foetal abnormal lie.", "is_correct": false}], "correct_answer": "c", "number": 116, "section": "OB/GYN"}, {"question": "Preterm labour is not caused by the following:", "options": [{"letter": "a", "text": "Hydramnios.", "is_correct": false}, {"letter": "b", "text": "Multiple pregnancy.", "is_correct": false}, {"letter": "c", "text": "Placental abruption.", "is_correct": false}, {"letter": "d", "text": "Intravenous saline.", "is_correct": true}, {"letter": "e", "text": "External cephalic version.", "is_correct": false}], "correct_answer": "d", "number": 117, "section": "OB/GYN"}, {"question": "Pregnancy induced hypertension:", "options": [{"letter": "a", "text": "is diagnosed at the booking clinic.", "is_correct": false}, {"letter": "b", "text": "is a preventable condition.", "is_correct": false}, {"letter": "c", "text": "is diagnosed during the second half of pregnancy.", "is_correct": true}, {"letter": "d", "text": "is not a common health problem.", "is_correct": false}, {"letter": "e", "text": "when neglected is less dangerous on the mothers life than the fetus.", "is_correct": false}], "correct_answer": "c", "number": 118, "section": "Medicine"}, {"question": "Kielland obstetric forceps:", "options": [{"letter": "a", "text": "is the short curved forceps.", "is_correct": false}, {"letter": "b", "text": "is used for rotation and traction.", "is_correct": true}, {"letter": "c", "text": "is the least traumatic forceps.", "is_correct": false}, {"letter": "d", "text": "should be used when the patent is under general anaesthesia.", "is_correct": false}, {"letter": "e", "text": "has no sliding lock.", "is_correct": false}], "correct_answer": "b", "number": 119, "section": "OB/GYN"}, {"question": "Wrigley’s obstetric forceps:", "options": [{"letter": "a", "text": "is the long curved forceps.", "is_correct": false}, {"letter": "b", "text": "is used for delivery of the after coming head.", "is_correct": true}, {"letter": "c", "text": "must be used without analgesia.", "is_correct": false}, {"letter": "d", "text": "can be used for rotation when the head is in the midpelvic cavity.", "is_correct": false}, {"letter": "e", "text": "has a sliding lock.", "is_correct": false}], "correct_answer": "b", "number": 120, "section": "OB/GYN"}, {"question": "The following is an indication for LSCS:", "options": [{"letter": "a", "text": "Grandmultiparity with breech.", "is_correct": false}, {"letter": "b", "text": "Vaginal bleeding due to placenta praevia with uterine contractions.", "is_correct": false}, {"letter": "c", "text": "Placenta praevia type II anterior.", "is_correct": false}, {"letter": "d", "text": "Transverse lie during labour.", "is_correct": true}, {"letter": "e", "text": "Previous LSCS in a para one done for a non- recurrent cause.", "is_correct": false}], "correct_answer": "d", "number": 121, "section": "OB/GYN"}, {"question": "The following are complications of LSCS except:", "options": [{"letter": "a", "text": "Iujury to the bowels.", "is_correct": false}, {"letter": "b", "text": "Injury to the bladder.", "is_correct": false}, {"letter": "c", "text": "Anuria.", "is_correct": false}, {"letter": "d", "text": "Failure to breast feed.", "is_correct": true}, {"letter": "e", "text": "Amniotic fluid embolism.", "is_correct": false}], "correct_answer": "d", "number": 122, "section": "OB/GYN"}, {"question": "The following is a feature of unripe cervix:", "options": [{"letter": "a", "text": "Soft.", "is_correct": false}, {"letter": "b", "text": "Central in position.", "is_correct": false}, {"letter": "c", "text": "Well applied to the presenting part.", "is_correct": false}, {"letter": "d", "text": "Thin.", "is_correct": true}, {"letter": "e", "text": "Tightly closed. The partograph monitors and records the following except:", "is_correct": false}], "correct_answer": "d", "number": 123, "section": "OB/GYN"}, {"question": "The partograph monitors and records the following except:", "options": [{"letter": "a", "text": "Maternal vital signs.", "is_correct": false}, {"letter": "b", "text": "Cervical dilatation.", "is_correct": false}, {"letter": "c", "text": "Uterine contractions.", "is_correct": false}, {"letter": "d", "text": "Number of foetal kicks.", "is_correct": true}, {"letter": "e", "text": "Foetal heart pattern.", "is_correct": false}], "correct_answer": "d", "number": 124, "section": "OB/GYN"}, {"question": "Which of the following are TRUE with regard to normal labour:", "options": [{"letter": "a", "text": "Labour commences with onset of regular painful contractions in the presence of a dilated cervix", "is_correct": false}, {"letter": "b", "text": "Retraction of the head during the second stage suggests an undiagnosed malposition", "is_correct": false}, {"letter": "c", "text": "The average time for the second stage is one hour in the multiparous woman", "is_correct": false}, {"letter": "d", "text": "The second stage includes both a latent and active stage", "is_correct": false}, {"letter": "e", "text": "Signs of placental separation include a gush of bright", "is_correct": true}], "correct_answer": "e", "number": 125, "section": "OB/GYN"}, {"question": "Which of the following is associated with profuse painless vaginal bleeding in the third trimester?", "options": [{"letter": "a", "text": "abruptio placenta", "is_correct": false}, {"letter": "b", "text": "umbilical cord prolapse", "is_correct": false}, {"letter": "c", "text": "degenerating fibroid", "is_correct": false}, {"letter": "d", "text": "placental insufficiency", "is_correct": false}, {"letter": "e", "text": "placenta previa", "is_correct": true}], "correct_answer": "e", "number": 126, "section": "OB/GYN"}, {"question": "Which of the following is NOT a prerequisite to the use of forceps in obstetrical delivery?", "options": [{"letter": "a", "text": "patient must be fully dilated", "is_correct": false}, {"letter": "b", "text": "full bladder", "is_correct": true}, {"letter": "c", "text": "adequate anaesthesia", "is_correct": false}, {"letter": "d", "text": "position of fetus known", "is_correct": false}, {"letter": "e", "text": "ruptured membranes", "is_correct": false}], "correct_answer": "b", "number": 127, "section": "Surgery"}, {"question": "All of the following are prerequisites for labour suppression (tocolysis) EXCEPT:", "options": [{"letter": "a", "text": "intact membranes", "is_correct": false}, {"letter": "b", "text": "live fetus", "is_correct": false}, {"letter": "c", "text": "absence of fetal distress", "is_correct": false}, {"letter": "d", "text": "no dilatation", "is_correct": true}, {"letter": "e", "text": "necessary personnel if tocolysis fails", "is_correct": false}], "correct_answer": "d", "number": 128, "section": "OB/GYN"}, {"question": "When prescribing the oral contraceptive pill (OCP), which of the following should be done:", "options": [{"letter": "a", "text": "Inform patients that the OCP protects against STDs", "is_correct": false}, {"letter": "b", "text": "Perform breast, abdominal and pelvic exams and assess blood pressure", "is_correct": true}, {"letter": "c", "text": "Warn patients that their risk of dysmenorrhea is increased", "is_correct": false}, {"letter": "d", "text": "Perform a complete physical exam after taking a thorough sexual history", "is_correct": false}, {"letter": "e", "text": "Perform a Beta-HCG test prior to prescribing OCP", "is_correct": false}], "correct_answer": "b", "number": 129, "section": "OB/GYN"}, {"question": "A 45 year old lady presents after a 6 week history of a painful neck. The pain is described as shooting in nature and  severe. Now she describes a 3 day history of right arm weakness Examination reveals weakness on right shoulder abduction  and right elbow flexion . Reflexes in her right arm are all absent apart from triceps. There are no sensory findings. The remainder of the examination is normal. The most likely diagnosisis:", "options": [{"letter": "a", "text": "CVA", "is_correct": false}, {"letter": "b", "text": "cervical myelopathy", "is_correct": false}, {"letter": "c", "text": "brachial neuritis", "is_correct": true}, {"letter": "d", "text": "radial nerve palsy", "is_correct": false}, {"letter": "e", "text": "frozen shoulder", "is_correct": false}], "correct_answer": "c", "number": 130, "section": "Medicine"}, {"question": "You examine a 78 year old right handed man who is dysphasic and  has suffered from a stroke. Which one of the following clinical signs would you expect to find ?", "options": [{"letter": "a", "text": "Left extensor plantar", "is_correct": false}, {"letter": "b", "text": "Left homonymous hemianopia", "is_correct": false}, {"letter": "c", "text": "Left sided hemiplegia", "is_correct": false}, {"letter": "d", "text": "Right homonymous hemianopia", "is_correct": true}, {"letter": "e", "text": "Right lower motor neurone VIIth nerve palsy.", "is_correct": false}], "correct_answer": "d", "number": 131, "section": "Medicine"}, {"question": "The following can cause bradycardia except", "options": [{"letter": "a", "text": "hypothermia", "is_correct": false}, {"letter": "b", "text": "hypothyroidism", "is_correct": false}, {"letter": "c", "text": "severe anaemia", "is_correct": true}, {"letter": "d", "text": "subdural haematoma", "is_correct": false}, {"letter": "e", "text": "shock", "is_correct": false}], "correct_answer": "c", "number": 132, "section": "Medicine"}, {"question": "The following drugs reduce gastric acid secretion except", "options": [{"letter": "a", "text": "aluminium hydroxide", "is_correct": true}, {"letter": "b", "text": "omeprazole", "is_correct": false}, {"letter": "c", "text": "cimetidine", "is_correct": false}, {"letter": "d", "text": "misoprostol", "is_correct": false}], "correct_answer": "a", "number": 133, "section": "Medicine"}, {"question": "Chronic alcohol abuse is associated with", "options": [{"letter": "a", "text": "subdural haematoma", "is_correct": false}, {"letter": "b", "text": "parotid gland enlargement", "is_correct": false}, {"letter": "c", "text": "gynaecomastia", "is_correct": false}, {"letter": "d", "text": "myopathy", "is_correct": false}, {"letter": "e", "text": "all of the above", "is_correct": true}], "correct_answer": "e", "number": 134, "section": "Medicine"}, {"question": "Which of the following is the most likely incubation period in food poisoning caused by Enterotoxigenic E. Coli?", "options": [{"letter": "a", "text": "less than 1 hour", "is_correct": false}, {"letter": "b", "text": "2-6 hours", "is_correct": false}, {"letter": "c", "text": "8-22 hours", "is_correct": false}, {"letter": "d", "text": "12-72 hours", "is_correct": true}, {"letter": "e", "text": "3-5 days", "is_correct": false}], "correct_answer": "d", "number": 135, "section": "Medicine"}, {"question": "A 42-year-old man with acute renal failure is confused. His serum potassium is 8.1 mEq/L . The most likely abnormal ECG finding is", "options": [{"letter": "a", "text": "T wave inversion", "is_correct": false}, {"letter": "b", "text": "PR interval of 300ms", "is_correct": false}, {"letter": "c", "text": "QT interval of 0.4s", "is_correct": false}, {"letter": "d", "text": "U wave", "is_correct": false}, {"letter": "e", "text": "tall tented T waves", "is_correct": true}], "correct_answer": "e", "number": 136, "section": "Medicine"}, {"question": "Atrial septal defect without pulmonary hypertension typically causes :", "options": [{"letter": "a", "text": "Loud first heart sound", "is_correct": false}, {"letter": "b", "text": "Raised jugular venous pressure (JVP)", "is_correct": false}, {"letter": "c", "text": "Loud P2 second heart sound", "is_correct": true}, {"letter": "d", "text": "Loud A2 second heart sound", "is_correct": false}, {"letter": "e", "text": "Displaced apex beat", "is_correct": false}], "correct_answer": "c", "number": 137, "section": "Medicine"}, {"question": "A 55 year old woman complains to her general practitioner of a progressive difficulty of holding objects with her left hand. She also admitted to swallowing difficulties over the past 6 months. On examination the physician noted signs of lower motor neurone involvement . An initial diagnostic test in the work up of this patient should include one of the following", "options": [{"letter": "a", "text": "barium swallow", "is_correct": false}, {"letter": "b", "text": "Electromyography", "is_correct": true}, {"letter": "c", "text": "CT scan of the spine", "is_correct": false}, {"letter": "d", "text": "MRI of the spine", "is_correct": false}, {"letter": "e", "text": "MRI of the brain", "is_correct": false}], "correct_answer": "b", "number": 138, "section": "Medicine"}, {"question": "A 60 years old man with severe hypertension presents with a history of palpitations complains of a painful big toe that appeared overnight abruptly. On physical examination his blood pressure was 190/125. Upon review of his ECG it was found that he has an atrial tachycardia. What is the most appropriate treatment for this patient", "options": [{"letter": "a", "text": "Propranolol and hydrochlorothiazide", "is_correct": false}, {"letter": "b", "text": "Propranolol and furosemide", "is_correct": false}, {"letter": "c", "text": "Propranolol and enalapril", "is_correct": true}, {"letter": "d", "text": "Verapamil and furosemide", "is_correct": false}, {"letter": "e", "text": "Verapamil and hydrochlorothiazide", "is_correct": false}], "correct_answer": "c", "number": 139, "section": "Medicine"}, {"question": "Which medication is the most likely cause ?", "options": [{"letter": "a", "text": "Nitroglycerin", "is_correct": false}, {"letter": "b", "text": "Propranolol", "is_correct": false}, {"letter": "c", "text": "Nifedipine", "is_correct": false}, {"letter": "d", "text": "Verapamil", "is_correct": false}, {"letter": "e", "text": "Sodium Valproate", "is_correct": true}], "correct_answer": "e", "number": 140, "section": "Medicine"}, {"question": "A 18 year old intravenous drug user has the sudden onset of fever and chills. He has pain in his right knee. Movement of his knee causes pain. He denies any trauma to his knee. On physical examination, his knee is red and warm. Laboratory investigations are done. His white blood count is 15,000 cu/mm, rheumatoid factor is negative, uric acid is within normal limits. An aspiration of his knee joint is planned to be done. What is the likely diagnosis?", "options": [{"letter": "a", "text": "rheumatoid arthritis", "is_correct": false}, {"letter": "b", "text": "osteoarthritis", "is_correct": false}, {"letter": "c", "text": "suppurative arthritis", "is_correct": true}, {"letter": "d", "text": "gout", "is_correct": false}, {"letter": "e", "text": "ankylosing spondylitis", "is_correct": false}], "correct_answer": "c", "number": 141, "section": "Medicine"}, {"question": "A middle aged woman is suspected of having a coagulation disorder affecting the intrinsic pathway before the prothrombin to thrombin stage. Which one of the following tests would be most appropriate in this patient ?", "options": [{"letter": "a", "text": "Activated partial thromboplastin time", "is_correct": true}, {"letter": "b", "text": "Venous clotting time", "is_correct": false}, {"letter": "c", "text": "Activated whole blood clotting time", "is_correct": false}, {"letter": "d", "text": "Thrombin time", "is_correct": false}, {"letter": "e", "text": "Plasma fibrinogen", "is_correct": false}], "correct_answer": "a", "number": 142, "section": "Medicine"}, {"question": "A young girl is diagnosed with rheumatic fever. All of the following manifestations are recognised as part of the Jones major criteria for diagnosis of rheumatic fever except", "options": [{"letter": "a", "text": "migratory polyarthritis of large joints", "is_correct": false}, {"letter": "b", "text": "carditis", "is_correct": false}, {"letter": "c", "text": "erythema marginatum", "is_correct": false}, {"letter": "d", "text": "sydenham's chorea", "is_correct": false}, {"letter": "e", "text": "elevated ASO titers", "is_correct": true}], "correct_answer": "e", "number": 143, "section": "Medicine"}, {"question": "The following are recognised causes of body hair loss except", "options": [{"letter": "a", "text": "hypothyroidism", "is_correct": false}, {"letter": "b", "text": "anorexia nervosa", "is_correct": false}, {"letter": "c", "text": "haemochromatosis", "is_correct": false}, {"letter": "d", "text": "Cushing's syndrome", "is_correct": true}, {"letter": "e", "text": "(Sheehan's syndrome) post partum pituitary necrosis", "is_correct": false}], "correct_answer": "d", "number": 144, "section": "Medicine"}, {"question": "A 65 year-old newly-diagnosed hypertensive male is about to begin anti-hypertensive medication. Which of the following should you NOT prescribe as first-line therapy:", "options": [{"letter": "a", "text": "angiotensin-converting enzyme inhibitor", "is_correct": false}, {"letter": "b", "text": "long acting dihydropyridine", "is_correct": false}, {"letter": "c", "text": "beta-adrenergic antagonist", "is_correct": true}, {"letter": "d", "text": "low dose thiazide diuretic", "is_correct": false}, {"letter": "e", "text": "high dose hydrochlorothiazide", "is_correct": false}], "correct_answer": "c", "number": 145, "section": "Medicine"}, {"question": "Group A Strep is least likely to cause which of the following complications:", "options": [{"letter": "a", "text": "scarlet fever", "is_correct": false}, {"letter": "b", "text": "necrotizing faciitis", "is_correct": false}, {"letter": "c", "text": "impetigo", "is_correct": false}, {"letter": "d", "text": "subacute bacterial endocarditis", "is_correct": true}, {"letter": "e", "text": "glomerulonephritis", "is_correct": false}], "correct_answer": "d", "number": 146, "section": "Medicine"}, {"question": "Severe bloody, afebrile diarrhea is associated with what bacterial infection?", "options": [{"letter": "a", "text": "Salmonella infection", "is_correct": false}, {"letter": "b", "text": "Enteroinvasive E.coli infection", "is_correct": false}, {"letter": "c", "text": "Enterohemorrhagic E. coli infection", "is_correct": true}, {"letter": "d", "text": "Enterotoxigenic E. coli infection", "is_correct": false}, {"letter": "e", "text": "Giardiasis", "is_correct": false}], "correct_answer": "c", "number": 147, "section": "Medicine"}, {"question": "A 22 year old woman with a history of type 1 diabetes mellitus is brought to the emergency room in coma. Blood tests indicate a wide anion gap metabolic acidosis. If her metabolic acidosis is due solely to diabetic ketoacidosis, which of the following findings is NOT consistent:", "options": [{"letter": "a", "text": "blood glucose increased", "is_correct": false}, {"letter": "b", "text": "serum ketones increased", "is_correct": false}, {"letter": "c", "text": "serum osmolar gap increased", "is_correct": true}, {"letter": "d", "text": "extracellular fluid volume reduced", "is_correct": false}, {"letter": "e", "text": "urine dip positive for ketones", "is_correct": false}], "correct_answer": "c", "number": 148, "section": "Medicine"}, {"question": "Which of the following is not an aggravating factor of congestive heart failure?", "options": [{"letter": "a", "text": "hypertension", "is_correct": false}, {"letter": "b", "text": "thyrotoxicosis", "is_correct": false}, {"letter": "c", "text": "alcohol", "is_correct": false}, {"letter": "d", "text": "inactivity", "is_correct": true}, {"letter": "e", "text": "arrhythmia", "is_correct": false}], "correct_answer": "d", "number": 149, "section": "Medicine"}, {"question": "A child aged 4 years has had fever, malaise, vomiting and right-sided abdominal pain for 48 hours. The following are likely diagnoses except :", "options": [{"letter": "a", "text": "acute pyelonephritis", "is_correct": false}, {"letter": "b", "text": "shigella dysentry", "is_correct": false}, {"letter": "c", "text": "ascaris lumbricoides infestation, if the child is living in the tropics", "is_correct": false}, {"letter": "d", "text": "right sided abdominal tumour", "is_correct": true}, {"letter": "e", "text": "lobar pneumonia", "is_correct": false}], "correct_answer": "d", "number": 150, "section": "Pediatrics"}, {"question": "Recognised features of tender scrotal swelling in infancy include all of the following except:", "options": [{"letter": "a", "text": "inguinal hernia", "is_correct": false}, {"letter": "b", "text": "epididymo-orchitis", "is_correct": false}, {"letter": "c", "text": "breech delivery", "is_correct": false}, {"letter": "d", "text": "torsion of testis", "is_correct": false}, {"letter": "e", "text": "teratoma", "is_correct": true}], "correct_answer": "e", "number": 151, "section": "Surgery"}, {"question": "The following statements regarding retinoblastoma are correct except :", "options": [{"letter": "a", "text": "it is usually fatal even if diagnosis is made early", "is_correct": true}, {"letter": "b", "text": "the tumour is heritable", "is_correct": false}, {"letter": "c", "text": "it may occur bilaterally", "is_correct": false}, {"letter": "d", "text": "the finding of leucorrhoea suggests the diagnosis", "is_correct": false}, {"letter": "e", "text": "it may present with heterochromia iris", "is_correct": false}], "correct_answer": "a", "number": 152, "section": "Pediatrics"}, {"question": "Which one of the following skills would be expected of a 7 month old infant but not of a 5 month old infant?", "options": [{"letter": "a", "text": "crawls", "is_correct": false}, {"letter": "b", "text": "smiles socially", "is_correct": false}, {"letter": "c", "text": "controls bowel and bladder", "is_correct": false}, {"letter": "d", "text": "sits unsupported", "is_correct": true}, {"letter": "e", "text": "raises head while prone", "is_correct": false}], "correct_answer": "d", "number": 153, "section": "Pediatrics"}, {"question": "Acute bronchiolitis is associated with all of the following except", "options": [{"letter": "a", "text": "a higher incidence in infants than in school children", "is_correct": false}, {"letter": "b", "text": "respiratory syncitial virus infection", "is_correct": false}, {"letter": "c", "text": "widespread fine crackles", "is_correct": false}, {"letter": "d", "text": "a polymorphonuclear leucocytosis", "is_correct": true}], "correct_answer": "d", "number": 154, "section": "Pediatrics"}, {"question": "In childhood, hypokalaemic alkalosis is a recognised finding:", "options": [{"letter": "a", "text": "in a baby given feeds that are too concentrated", "is_correct": false}, {"letter": "b", "text": "in congenital pyloric stenosis", "is_correct": true}, {"letter": "c", "text": "in cystic fibrosis", "is_correct": false}, {"letter": "d", "text": "following urinary diversion", "is_correct": false}, {"letter": "e", "text": "in renal failure", "is_correct": false}], "correct_answer": "b", "number": 155, "section": "Pediatrics"}, {"question": "Psychosis in children is suggested by all of the following except", "options": [{"letter": "a", "text": "absence of speech", "is_correct": false}, {"letter": "b", "text": "intense outbursts of temper", "is_correct": false}, {"letter": "c", "text": "sudden onset of stuttering", "is_correct": true}, {"letter": "d", "text": "feelings of depersonalisation", "is_correct": false}], "correct_answer": "c", "number": 156, "section": "Pediatrics"}, {"question": "Progressive spinal muscular atrophy of infancy presents with all of the following except", "options": [{"letter": "a", "text": "severe generalised weakness", "is_correct": false}, {"letter": "b", "text": "fasiculations seen in the tongue", "is_correct": false}, {"letter": "c", "text": "loss of spinothalamic tract function", "is_correct": true}, {"letter": "d", "text": "spontaneous fibrillation on electromyography", "is_correct": false}], "correct_answer": "c", "number": 157, "section": "Pediatrics"}, {"question": "An infant aged 16 months was referred for assessment of suspected mental retardation. Which one of the following findings is outside the normal range?", "options": [{"letter": "a", "text": "He does not scribble spontaneously with pencil on paper.", "is_correct": false}, {"letter": "b", "text": "He does not walk alone.", "is_correct": false}, {"letter": "c", "text": "\"Ma\" and \"Dada\" are the only words which are clearly recognizable.", "is_correct": false}, {"letter": "d", "text": "He is unable to build a tower of 4 cubes.", "is_correct": false}, {"letter": "e", "text": "He is unable to throw an object.", "is_correct": true}], "correct_answer": "e", "number": 158, "section": "Pediatrics"}, {"question": "A 6 month-old infant presents in the winter with fever, cough, wheezing, tachypnea and decreased appetite. A chest radiograph shows hyperaeration and streaky perihilar infiltrates bilaterally. You diagnose bronchopneumonia. Which organism would most likely be causing this child's infection?", "options": [{"letter": "a", "text": "Chlamydia pneumoniae", "is_correct": false}, {"letter": "b", "text": "Mycoplasma pneumoniae", "is_correct": false}, {"letter": "c", "text": "Streptococcus pneumoniae", "is_correct": false}, {"letter": "d", "text": "Haemophilus influenzae", "is_correct": false}, {"letter": "e", "text": "respiratory syncytial virus", "is_correct": true}], "correct_answer": "e", "number": 159, "section": "Medicine"}, {"question": "A 12 month-old girl is brought to the emergency department for the second time in 2 days for vomiting and passage of 8 to 10 watery stools per day. Of the following, which provides the best estimate of the patient’s volume deficit:", "options": [{"letter": "a", "text": "weight change since the beginning of the illness", "is_correct": true}, {"letter": "b", "text": "hydration of mucous membranes, skin turgor, and level of consciousness", "is_correct": false}, {"letter": "c", "text": "pulse, blood pressure, and peripheral capillary filling time", "is_correct": false}, {"letter": "d", "text": "serum electrolytes", "is_correct": false}, {"letter": "e", "text": "serum urea nitrogen and creatinine levels", "is_correct": false}], "correct_answer": "a", "number": 160, "section": "Pediatrics"}, {"question": "A 12 month-old girl is brought to the emergency department for the second time in 2 days for vomiting and passage of 8 to 10 watery stools per day. The patient has lost 0.6 kg. She is moderately lethargic and has dry mucous membranes and reduced skin turgor. Blood pressure is 80/40 mm Hg, and pulse is 120 per minute; capillary refill is reasonably brisk. Lab studies reveal: sodium 131, potassium 4.8, chloride 101, bicarbonate 16 mEq/L, urea nitrogen 24 mg/dL and creatinine 0.6 mg/dL. The best strategy for managing this child is to:", "options": [{"letter": "a", "text": "hospitalize for administration of IV fluid therapy", "is_correct": true}, {"letter": "b", "text": "administer an oral rehydrating solution while the child is under medical supervision for 4-6 hours", "is_correct": false}, {"letter": "c", "text": "instruct the parents about oral rehydration at home", "is_correct": false}, {"letter": "d", "text": "hospitalize after giving 20 mL/kg of 0.9% saline IV", "is_correct": false}, {"letter": "e", "text": "instruct parents on use of soy formula", "is_correct": false}], "correct_answer": "a", "number": 161, "section": "Pediatrics"}, {"question": "Which of the following investigations is most helpful in the assessment of a child presenting with an acute asthma attack, who responds poorly to treatment?", "options": [{"letter": "a", "text": "white cell count and differential", "is_correct": false}, {"letter": "b", "text": "arterial blood gases", "is_correct": true}, {"letter": "c", "text": "chest x-ray", "is_correct": false}, {"letter": "d", "text": "pulmonary function tests", "is_correct": false}, {"letter": "e", "text": "sweat chloride test", "is_correct": false}], "correct_answer": "b", "number": 162, "section": "Medicine"}, {"question": "A 6 year-old boy is brought to emergency with a 5 day history of fever, cough, and poor appetite, but no vomiting. On exam, he appears unwell, is febrile, and has crusty nasal discharge and a wet-sounding cough. Chest x-ray reveals a pulmonary infiltrate in the right middle lobe. He is admitted to hospital for pneumonia. What is the best management for this child?", "options": [{"letter": "a", "text": "observe for 24 hours with IV fluids only", "is_correct": false}, {"letter": "b", "text": "observe for 24 hours with IV fluids and acetaminophen", "is_correct": false}, {"letter": "c", "text": "give oral amoxicillin and acetaminophen", "is_correct": false}, {"letter": "d", "text": "give IV ampicillin and oral acetaminophen", "is_correct": false}, {"letter": "e", "text": "give oral erythromycin and acetaminophen", "is_correct": true}], "correct_answer": "e", "number": 163, "section": "Pediatrics"}, {"question": "In comparing breast milk and formula, which of the following statements is NOT correct:", "options": [{"letter": "a", "text": "breast milk has a higher percentage of protein", "is_correct": true}, {"letter": "b", "text": "breast milk has whey:casein ratio of 60:40", "is_correct": false}, {"letter": "c", "text": "breast milk contains leukocytes, complement and lysozymes", "is_correct": false}, {"letter": "d", "text": "breast milk has a lower concentration of iron than iron fortified formulae", "is_correct": false}, {"letter": "e", "text": "breast milk has an optimal calcium:phosphorus ratio of 2:1", "is_correct": false}], "correct_answer": "a", "number": 164, "section": "Pediatrics"}, {"question": "Most umbilical hernias in children:", "options": [{"letter": "a", "text": "need strapping", "is_correct": false}, {"letter": "b", "text": "resolve spontaneously", "is_correct": true}, {"letter": "c", "text": "require elective surgery", "is_correct": false}, {"letter": "d", "text": "require immediate surgery", "is_correct": false}, {"letter": "e", "text": "are associated with a higher incidence of inguinal hernias", "is_correct": false}], "correct_answer": "b", "number": 165, "section": "Pediatrics"}, {"question": "A newborn male spits up his first feeding and develops bilious emesis with subsequent feedings. On physical exam he appears ill, has a scaphoid abdomen and absent bowel sounds. Abdominal x-ray shows air in the proximal small bowel, but a paucity of air in the distal digestive tract. The most likely cause for this infant's vomiting and clinical finding is:", "options": [{"letter": "a", "text": "antral web", "is_correct": false}, {"letter": "b", "text": "choledochal cyst", "is_correct": false}, {"letter": "c", "text": "Hirschsprung disease", "is_correct": false}, {"letter": "d", "text": "tracheoesophageal fistula", "is_correct": false}, {"letter": "e", "text": "volvulus", "is_correct": true}], "correct_answer": "e", "number": 166, "section": "Pediatrics"}, {"question": "Breastfeeding is contraindicated if the mother has:", "options": [{"letter": "a", "text": "acute EBV infection", "is_correct": false}, {"letter": "b", "text": "acute HepA infection", "is_correct": false}, {"letter": "c", "text": "chronic HepB infection", "is_correct": false}, {"letter": "d", "text": "asymptomatic HIV infection", "is_correct": true}, {"letter": "e", "text": "none of the above", "is_correct": false}], "correct_answer": "d", "number": 167, "section": "Pediatrics"}, {"question": "Central cyanosis in the newborn infant is most often caused by:", "options": [{"letter": "a", "text": "congenital heart disease", "is_correct": false}, {"letter": "b", "text": "lung disease", "is_correct": true}, {"letter": "c", "text": "central nervous system disease", "is_correct": false}, {"letter": "d", "text": "methemoglobinemia", "is_correct": false}, {"letter": "e", "text": "hypoglycemia", "is_correct": false}], "correct_answer": "b", "number": 168, "section": "Pediatrics"}, {"question": "Which of the following is the most significant risk factor for the development of childhood asthma:", "options": [{"letter": "a", "text": "family social background", "is_correct": false}, {"letter": "b", "text": "parental asthma", "is_correct": true}, {"letter": "c", "text": "stress in the family", "is_correct": false}, {"letter": "d", "text": "parental smoking", "is_correct": false}, {"letter": "e", "text": "presence of pets in the house3", "is_correct": false}], "correct_answer": "b", "number": 169, "section": "Medicine"}, {"question": "Which of the following statements about sickle cell disease is true?", "options": [{"letter": "a", "text": "all patients with sickle cell disease have a homozygous HbSS genotype", "is_correct": false}, {"letter": "b", "text": "sickle cell disease causes a severe chronic anemia that is not routinely transfusion dependent", "is_correct": true}, {"letter": "c", "text": "patients have increased susceptibility to infection by nonencapsulated organisms", "is_correct": false}, {"letter": "d", "text": "patients usually present with sickle cell crises within one month of age", "is_correct": false}, {"letter": "e", "text": "splenic dysfunction usually does not occur until the child", "is_correct": false}], "correct_answer": "b", "number": 170, "section": "Medicine"}, {"question": "Which of the is more characteristic of platelet abnormalities and not coagulation defects?", "options": [{"letter": "a", "text": "hematomas", "is_correct": false}, {"letter": "b", "text": "hemarthrosis", "is_correct": false}, {"letter": "c", "text": "petechiae", "is_correct": true}, {"letter": "d", "text": "minimal bleeding from small cuts", "is_correct": false}, {"letter": "e", "text": "positive family history", "is_correct": false}], "correct_answer": "c", "number": 171, "section": "Medicine"}, {"question": "When prophylactic antibiotic therapy is used for tooth extraction in a patient with a ventricular septal defect:", "options": [{"letter": "a", "text": "therapy is started 24 hours prior to the procedure", "is_correct": false}, {"letter": "b", "text": "a throat swab should be taken prior to the procedure", "is_correct": false}, {"letter": "c", "text": "a second generation cephalosporin (cefuroxime) is the therapy of choice", "is_correct": false}, {"letter": "d", "text": "therapy is given for one week following the extraction", "is_correct": false}, {"letter": "e", "text": "erythromycin is the drug of choice for those allergic to penicillin", "is_correct": true}], "correct_answer": "e", "number": 172, "section": "Pediatrics"}, {"question": "Which of the following predisposes infants to chronic otitis media?", "options": [{"letter": "a", "text": "bottle-feeding in upright position", "is_correct": false}, {"letter": "b", "text": "abnormal tympanic membrane formation", "is_correct": false}, {"letter": "c", "text": "environmental factors such as daycare and passive smoking", "is_correct": true}, {"letter": "d", "text": "allergies", "is_correct": false}, {"letter": "e", "text": "none of the above", "is_correct": false}], "correct_answer": "c", "number": 173, "section": "Pediatrics"}];
+
+const sections = ['Surgery', 'Medicine', 'OB/GYN', 'Pediatrics'];
+let currentSection = 'Surgery';
+let currentQIndex = 0;
+let answers = {};
+let examSubmitted = false;
+let reviewMode = false;
+
+function getSectionQuestions(sec) {
+  return questions.filter(q => q.section === sec);
+}
+
+function getAllCurrentQuestions() {
+  return getSectionQuestions(currentSection);
+}
+
+function startExam() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('examScreen').classList.add('active');
+  renderSectionTabs();
+  renderQuestion();
+}
+
+function renderSectionTabs() {
+  const tabs = document.getElementById('sectionTabs');
+  tabs.innerHTML = sections.map(sec => {
+    const count = getSectionQuestions(sec).length;
+    const answered = getSectionQuestions(sec).filter(q => answers[q.number] !== undefined).length;
+    const cls = sec === currentSection ? 'active' : '';
+    return `<div class="section-tab ${cls}" onclick="switchSection('${sec}')">
+      ${sec}<span class="count">${answered}/${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function switchSection(sec) {
+  currentSection = sec;
+  currentQIndex = 0;
+  renderSectionTabs();
+  renderQuestion();
+}
+
+function renderDots() {
+  const qs = getAllCurrentQuestions();
+  const dots = document.getElementById('qDots');
+  dots.innerHTML = qs.map((q, i) => {
+    let cls = '';
+    if (i === currentQIndex) cls += ' current';
+    if (examSubmitted || reviewMode) {
+      if (answers[q.number] !== undefined) {
+        cls += answers[q.number] === q.correct_answer ? ' correct-dot' : ' wrong-dot';
+      }
+    } else if (answers[q.number] !== undefined) {
+      cls += ' answered';
+    }
+    return `<div class="q-dot${cls}" onclick="goToQuestion(${i})">${q.number}</div>`;
+  }).join('');
+}
+
+function renderQuestion() {
+  const qs = getAllCurrentQuestions();
+  if (qs.length === 0) return;
+  const q = qs[currentQIndex];
+  const area = document.getElementById('questionArea');
+  
+  const sectionClass = q.section === 'OB/GYN' ? 'obgyn' : q.section;
+  
+  let optionsHtml = q.options.map(opt => {
+    let cls = 'option';
+    let selected = answers[q.number] === opt.letter;
+    
+    if (examSubmitted || reviewMode) {
+      cls += ' disabled';
+      if (opt.is_correct) cls += ' correct';
+      else if (selected && !opt.is_correct) cls += ' wrong';
+    } else {
+      if (selected) cls += ' selected';
+    }
+    
+    return `<button class="${cls}" ${examSubmitted || reviewMode ? 'disabled' : ''} onclick="selectAnswer(${q.number}, '${opt.letter}')">
+      <span class="letter">${opt.letter}</span>
+      <span>${opt.text}</span>
+    </button>`;
+  }).join('');
+
+  area.innerHTML = `<div class="question-card">
+    <div class="q-header">
+      <div class="q-number">${q.number}</div>
+      <div class="q-section-badge ${sectionClass}">${q.section}</div>
+    </div>
+    <div class="q-text">${q.question}</div>
+    <div class="options">${optionsHtml}</div>
+  </div>`;
+
+  // Update progress
+  const totalAnswered = Object.keys(answers).length;
+  document.getElementById('progressFill').style.width = (totalAnswered / questions.length * 100) + '%';
+  document.getElementById('progressText').textContent = `${totalAnswered} / ${questions.length} answered`;
+
+  // Update nav buttons
+  document.getElementById('btnPrev').disabled = currentQIndex === 0;
+  const isLast = currentQIndex === qs.length - 1 && currentSection === sections[sections.length - 1];
+  if (currentQIndex === qs.length - 1) {
+    const nextSecIdx = sections.indexOf(currentSection) + 1;
+    if (nextSecIdx < sections.length && !examSubmitted && !reviewMode) {
+      document.getElementById('btnNext').textContent = sections[nextSecIdx] + ' \u2192';
+      document.getElementById('btnNext').disabled = false;
+    } else {
+      document.getElementById('btnNext').textContent = 'Next \u2192';
+      document.getElementById('btnNext').disabled = true;
+    }
+  } else {
+    document.getElementById('btnNext').textContent = 'Next \u2192';
+    document.getElementById('btnNext').disabled = false;
+  }
+
+  renderDots();
+  renderSectionTabs();
+  
+  // Top bar buttons
+  const topBtns = document.getElementById('topBarBtns');
+  if (reviewMode) {
+    topBtns.innerHTML = '<button class="btn-top btn-results-top" onclick="backToResults()">Back to Results</button>';
+  } else if (Object.keys(answers).length > 0 && !examSubmitted) {
+    topBtns.innerHTML = '<button class="btn-top btn-submit-top" onclick="submitExam()">Submit Exam</button>';
+  } else {
+    topBtns.innerHTML = '';
+  }
+}
+
+function selectAnswer(qNum, letter) {
+  if (examSubmitted || reviewMode) return;
+  answers[qNum] = letter;
+  renderQuestion();
+}
+
+function goToQuestion(idx) {
+  currentQIndex = idx;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevQuestion() {
+  if (currentQIndex > 0) {
+    currentQIndex--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function nextQuestion() {
+  const qs = getAllCurrentQuestions();
+  if (currentQIndex < qs.length - 1) {
+    currentQIndex++;
+  } else {
+    const nextSecIdx = sections.indexOf(currentSection) + 1;
+    if (nextSecIdx < sections.length) {
+      currentSection = sections[nextSecIdx];
+      currentQIndex = 0;
+    }
+  }
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitExam() {
+  examSubmitted = true;
+  showResults();
+}
+
+function showResults() {
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  
+  let totalCorrect = 0;
+  questions.forEach(q => {
+    if (answers[q.number] === q.correct_answer) totalCorrect++;
+  });
+  
+  const pct = Math.round(totalCorrect / questions.length * 100);
+  document.getElementById('totalScore').textContent = totalCorrect + '/' + questions.length;
+  document.getElementById('totalPct').textContent = pct + '%';
+  
+  let title, sub;
+  if (pct >= 80) { title = 'Excellent!'; sub = 'Outstanding performance'; }
+  else if (pct >= 60) { title = 'Good Job!'; sub = 'Solid understanding'; }
+  else if (pct >= 40) { title = 'Keep Studying'; sub = 'Room for improvement'; }
+  else { title = 'Need More Practice'; sub = 'Review the material carefully'; }
+  
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  
+  let secHtml = '';
+  sections.forEach(sec => {
+    const qs = getSectionQuestions(sec);
+    const correct = qs.filter(q => answers[q.number] === q.correct_answer).length;
+    const secPct = Math.round(correct / qs.length * 100);
+    const color = secPct >= 60 ? 'var(--correct)' : 'var(--wrong)';
+    secHtml += `<div class="section-result-card">
+      <div class="sec-name">${sec}</div>
+      <div class="sec-score" style="color:${color}">${correct}/${qs.length} (${secPct}%)</div>
+    </div>`;
+  });
+  document.getElementById('sectionResults').innerHTML = secHtml;
+  window.scrollTo({ top: 0 });
+}
+
+function reviewAnswers() {
+  reviewMode = true;
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('examScreen').classList.add('active');
+  currentSection = 'Surgery';
+  currentQIndex = 0;
+  renderQuestion();
+  window.scrollTo({ top: 0 });
+}
+
+function backToResults() {
+  reviewMode = false;
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  window.scrollTo({ top: 0 });
+}
+
+function restartExam() {
+  answers = {};
+  examSubmitted = false;
+  reviewMode = false;
+  currentSection = 'Surgery';
+  currentQIndex = 0;
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('startScreen').style.display = 'flex';
+  window.scrollTo({ top: 0 });
+}
+</script>
+</body>
+</html>
