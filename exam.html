@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudan Medical Permanent Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --card: #1a1d27;
+  --card-hover: #22263a;
+  --border: #2a2e3f;
+  --text: #e4e6ef;
+  --text-dim: #8b8fa3;
+  --accent: #6c5ce7;
+  --accent-light: #a29bfe;
+  --correct: #00b894;
+  --correct-bg: rgba(0,184,148,0.12);
+  --wrong: #e17055;
+  --wrong-bg: rgba(225,112,85,0.12);
+  --surgery: #e17055;
+  --medicine: #6c5ce7;
+  --obgyn: #00b894;
+  --pediatrics: #fdcb6e;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* START SCREEN */
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 24px;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(108,92,231,0.3);
+}
+
+.start-screen h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.start-screen .subtitle {
+  color: var(--text-dim);
+  font-size: 1rem;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-card .num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+.stat-card .label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.3s;
+  box-shadow: 0 4px 24px rgba(108,92,231,0.3);
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(108,92,231,0.4);
+}
+
+/* EXAM SCREEN */
+.exam-screen { display:none; animation: fadeIn 0.4s ease; }
+.exam-screen.active { display:block; }
+
+/* Section Tabs */
+.section-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 0;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+}
+.section-tabs::-webkit-scrollbar { display:none; }
+
+.section-tab {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+
+.section-tab:hover { border-color: var(--accent); color: var(--text); }
+
+.section-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.section-tab .count {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+/* Progress */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+/* Question Card */
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.q-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.q-number {
+  background: var(--accent);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.q-section-badge {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.q-section-badge.Surgery { background: rgba(225,112,85,0.15); color: var(--surgery); }
+.q-section-badge.Medicine { background: rgba(108,92,231,0.15); color: var(--accent-light); }
+.q-section-badge.OB\/GYN, .q-section-badge.obgyn { background: rgba(0,184,148,0.15); color: var(--obgyn); }
+.q-section-badge.Pediatrics { background: rgba(253,203,110,0.15); color: var(--pediatrics); }
+
+.q-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+/* Options */
+.options { display:flex; flex-direction:column; gap:8px; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.option:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: rgba(108,92,231,0.06);
+}
+
+.option .letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--card-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.option.selected {
+  border-color: var(--accent);
+  background: rgba(108,92,231,0.1);
+}
+.option.selected .letter {
+  background: var(--accent);
+  color: #fff;
+}
+
+.option.correct {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}
+.option.correct .letter {
+  background: var(--correct);
+  color: #fff;
+}
+
+.option.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-bg);
+}
+.option.wrong .letter {
+  background: var(--wrong);
+  color: #fff;
+}
+
+.option.disabled { cursor: default; opacity: 0.7; }
+.option.correct.disabled { opacity: 1; }
+
+/* Navigation */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.btn-nav {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover { border-color: var(--accent); background: var(--card-hover); }
+
+.btn-nav.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-nav.primary:hover { background: var(--accent-light); }
+
+.btn-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Top Bar */
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.top-bar .title {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.top-bar .btn-top {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-submit-top {
+  background: var(--correct);
+  color: #fff;
+}
+
+.btn-results-top {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* RESULTS SCREEN */
+.results-screen { display:none; animation: fadeIn 0.5s ease; }
+.results-screen.active { display:block; }
+
+.results-header {
+  text-align: center;
+  padding: 40px 0 32px;
+}
+
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 6px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.score-circle .score-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  line-height: 1;
+}
+
+.score-circle .score-pct {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.results-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.results-header .result-sub {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.section-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.section-result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.section-result-card .sec-name {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.section-result-card .sec-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.btn-review {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.btn-review:hover { border-color: var(--accent); }
+
+.btn-restart {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-restart:hover { background: var(--accent-light); }
+
+/* Review mode */
+.review-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Question dots navigation */
+.q-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.q-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-dim);
+}
+
+.q-dot:hover { border-color: var(--accent); }
+.q-dot.answered { background: var(--accent); border-color: var(--accent); color: #fff; }
+.q-dot.current { border-color: var(--accent-light); box-shadow: 0 0 0 2px rgba(108,92,231,0.3); }
+.q-dot.correct-dot { background: var(--correct); border-color: var(--correct); color: #fff; }
+.q-dot.wrong-dot { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .start-screen h1 { font-size: 1.6rem; }
+  .question-card { padding: 18px; }
+  .q-text { font-size: 0.9rem; }
+  .option { padding: 12px; font-size: 0.85rem; }
+  .section-tabs { gap: 6px; }
+  .section-tab { padding: 8px 14px; font-size: 0.8rem; }
+  .q-dot { width: 28px; height: 28px; font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="loadingIndicator" style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;font-family:'DM Sans',sans-serif;color:#8b8fa3;font-size:1.1rem;">Loading questions...</div>
+
+
+
+
+<!-- EXAM SCREEN -->
+<div class="exam-screen" id="examScreen">
+  <div class="top-bar">
+    <a href="index.html" style="color:var(--text-dim);text-decoration:none;font-size:1.2rem;padding:4px 8px;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-dim)'">&larr;</a>
+    <span class="title">Sudan Medical Permanent Exam</span>
+    <span id="topBarBtns"></span>
+  </div>
+  <div class="container">
+    <div class="section-tabs" id="sectionTabs"></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="q-dots" id="qDots"></div>
+    <div id="questionArea"></div>
+    <div class="nav-row">
+      <button class="btn-nav" id="btnPrev" onclick="prevQuestion()">&larr; Previous</button>
+      <button class="btn-nav primary" id="btnNext" onclick="nextQuestion()">Next &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="results-screen" id="resultsScreen">
+  <div class="container">
+    <div class="results-header">
+      <div class="score-circle">
+        <div class="score-num" id="totalScore"></div>
+        <div class="score-pct" id="totalPct"></div>
+      </div>
+      <h2 id="resultTitle"></h2>
+      <p class="result-sub" id="resultSub"></p>
+    </div>
+    <div class="section-results" id="sectionResults"></div>
+    <button class="btn-review" onclick="reviewAnswers()">Review Answers</button>
+    <button class="btn-restart" onclick="restartExam()">Restart Exam</button>
+    <button class="btn-restart" onclick="window.location.href='index.html'" style="background:var(--card);border:1.5px solid var(--border);margin-top:8px;">Back to Home</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCsr6BkD9Egntq_1rCQfb2GMzCXu4mPU-k",
+  authDomain: "sudan-medical-exam-ea177.firebaseapp.com",
+  projectId: "sudan-medical-exam-ea177",
+  storageBucket: "sudan-medical-exam-ea177.firebasestorage.app",
+  messagingSenderId: "264853458575",
+  appId: "1:264853458575:web:c55bd58cfcd089dded2afa"
+});
+const db = firebase.firestore();
+db.enablePersistence().catch(function(){});
+
+let questions = [];
+
+function getExamId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('exam') || 'exam_1';
+}
+
+async function loadQuestions() {
+  var params = new URLSearchParams(window.location.search);
+  var isPreloaded = params.get('preloaded') === '1';
+  var examId = getExamId();
+
+  if (isPreloaded) {
+    try {
+      var cached = sessionStorage.getItem('exam_questions');
+      var cachedId = sessionStorage.getItem('exam_id');
+      if (cached && cachedId === examId) {
+        questions = JSON.parse(cached);
+        sessionStorage.removeItem('exam_questions');
+        sessionStorage.removeItem('exam_id');
+        startExam();
+        return;
+      }
+    } catch(ce) {}
+  }
+
+  try {
+    let snapshot;
+    if (examId === 'all') {
+      snapshot = await db.collection('questions').get();
+    } else {
+      snapshot = await db.collection('questions').where('exam_id', '==', examId).get();
+    }
+    questions = snapshot.docs.map(doc => {
+      const d = doc.data();
+      const opts = Object.entries(d.options).sort((a,b) => a[0].localeCompare(b[0])).map(([letter, text]) => ({
+        letter: letter.toLowerCase(),
+        text: text,
+        is_correct: letter === d.answer
+      }));
+      return {
+        question: d.text,
+        options: opts,
+        correct_answer: d.answer.toLowerCase(),
+        number: d.number,
+        section: d.section
+      };
+    }).sort((a,b) => a.number - b.number);
+  } catch(e) {
+    document.getElementById('loadingIndicator').innerHTML = '<div style="text-align:center;padding:40px;"><h2 style="color:#e4e6ef;">Error loading questions</h2><p style="color:#8b8fa3;">' + e.message + '</p><br><a href="index.html" style="color:#a29bfe;">Back to Home</a></div>';
+    return;
+  }
+  startExam();
+}
+
+loadQuestions();
+
+const sections = ['Surgery', 'Medicine', 'OB/GYN', 'Pediatrics'];
+let currentSection = 'Surgery';
+let currentQIndex = 0;
+let answers = {};
+let examSubmitted = false;
+let reviewMode = false;
+
+function getSectionQuestions(sec) {
+  return questions.filter(q => q.section === sec);
+}
+
+function getAllCurrentQuestions() {
+  return getSectionQuestions(currentSection);
+}
+
+function startExam() {
+  var loader = document.getElementById('loadingIndicator');
+  if (loader) loader.style.display = 'none';
+  document.getElementById('examScreen').classList.add('active');
+  renderSectionTabs();
+  renderQuestion();
+}
+
+function renderSectionTabs() {
+  const tabs = document.getElementById('sectionTabs');
+  tabs.innerHTML = sections.map(sec => {
+    const count = getSectionQuestions(sec).length;
+    const answered = getSectionQuestions(sec).filter(q => answers[q.number] !== undefined).length;
+    const cls = sec === currentSection ? 'active' : '';
+    return `<div class="section-tab ${cls}" onclick="switchSection('${sec}')">
+      ${sec}<span class="count">${answered}/${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function switchSection(sec) {
+  currentSection = sec;
+  currentQIndex = 0;
+  renderSectionTabs();
+  renderQuestion();
+}
+
+function renderDots() {
+  const qs = getAllCurrentQuestions();
+  const dots = document.getElementById('qDots');
+  dots.innerHTML = qs.map((q, i) => {
+    let cls = '';
+    if (i === currentQIndex) cls += ' current';
+    if (examSubmitted || reviewMode) {
+      if (answers[q.number] !== undefined) {
+        cls += answers[q.number] === q.correct_answer ? ' correct-dot' : ' wrong-dot';
+      }
+    } else if (answers[q.number] !== undefined) {
+      cls += ' answered';
+    }
+    return `<div class="q-dot${cls}" onclick="goToQuestion(${i})">${q.number}</div>`;
+  }).join('');
+}
+
+function renderQuestion() {
+  const qs = getAllCurrentQuestions();
+  if (qs.length === 0) return;
+  const q = qs[currentQIndex];
+  const area = document.getElementById('questionArea');
+  
+  const sectionClass = q.section === 'OB/GYN' ? 'obgyn' : q.section;
+  
+  let optionsHtml = q.options.map(opt => {
+    let cls = 'option';
+    let selected = answers[q.number] === opt.letter;
+    
+    if (examSubmitted || reviewMode) {
+      cls += ' disabled';
+      if (opt.is_correct) cls += ' correct';
+      else if (selected && !opt.is_correct) cls += ' wrong';
+    } else {
+      if (selected) cls += ' selected';
+    }
+    
+    return `<button class="${cls}" ${examSubmitted || reviewMode ? 'disabled' : ''} onclick="selectAnswer(${q.number}, '${opt.letter}')">
+      <span class="letter">${opt.letter}</span>
+      <span>${opt.text}</span>
+    </button>`;
+  }).join('');
+
+  area.innerHTML = `<div class="question-card">
+    <div class="q-header">
+      <div class="q-number">${q.number}</div>
+      <div class="q-section-badge ${sectionClass}">${q.section}</div>
+    </div>
+    <div class="q-text">${q.question}</div>
+    <div class="options">${optionsHtml}</div>
+  </div>`;
+
+  // Update progress
+  const totalAnswered = Object.keys(answers).length;
+  document.getElementById('progressFill').style.width = (totalAnswered / questions.length * 100) + '%';
+  document.getElementById('progressText').textContent = `${totalAnswered} / ${questions.length} answered`;
+
+  // Update nav buttons
+  document.getElementById('btnPrev').disabled = currentQIndex === 0;
+  const isLast = currentQIndex === qs.length - 1 && currentSection === sections[sections.length - 1];
+  if (currentQIndex === qs.length - 1) {
+    const nextSecIdx = sections.indexOf(currentSection) + 1;
+    if (nextSecIdx < sections.length && !examSubmitted && !reviewMode) {
+      document.getElementById('btnNext').textContent = sections[nextSecIdx] + ' \u2192';
+      document.getElementById('btnNext').disabled = false;
+    } else {
+      document.getElementById('btnNext').textContent = 'Next \u2192';
+      document.getElementById('btnNext').disabled = true;
+    }
+  } else {
+    document.getElementById('btnNext').textContent = 'Next \u2192';
+    document.getElementById('btnNext').disabled = false;
+  }
+
+  renderDots();
+  renderSectionTabs();
+  
+  // Top bar buttons
+  const topBtns = document.getElementById('topBarBtns');
+  if (reviewMode) {
+    topBtns.innerHTML = '<button class="btn-top btn-results-top" onclick="backToResults()">Back to Results</button>';
+  } else if (Object.keys(answers).length > 0 && !examSubmitted) {
+    topBtns.innerHTML = '<button class="btn-top btn-submit-top" onclick="submitExam()">Submit Exam</button>';
+  } else {
+    topBtns.innerHTML = '';
+  }
+}
+
+function selectAnswer(qNum, letter) {
+  if (examSubmitted || reviewMode) return;
+  answers[qNum] = letter;
+  renderQuestion();
+}
+
+function goToQuestion(idx) {
+  currentQIndex = idx;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevQuestion() {
+  if (currentQIndex > 0) {
+    currentQIndex--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function nextQuestion() {
+  const qs = getAllCurrentQuestions();
+  if (currentQIndex < qs.length - 1) {
+    currentQIndex++;
+  } else {
+    const nextSecIdx = sections.indexOf(currentSection) + 1;
+    if (nextSecIdx < sections.length) {
+      currentSection = sections[nextSecIdx];
+      currentQIndex = 0;
+    }
+  }
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitExam() {
+  examSubmitted = true;
+  showResults();
+}
+
+function showResults() {
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  
+  let totalCorrect = 0;
+  questions.forEach(q => {
+    if (answers[q.number] === q.correct_answer) totalCorrect++;
+  });
+  
+  const pct = Math.round(totalCorrect / questions.length * 100);
+  document.getElementById('totalScore').textContent = totalCorrect + '/' + questions.length;
+  document.getElementById('totalPct').textContent = pct + '%';
+  
+  let title, sub;
+  if (pct >= 80) { title = 'Excellent!'; sub = 'Outstanding performance'; }
+  else if (pct >= 60) { title = 'Good Job!'; sub = 'Solid understanding'; }
+  else if (pct >= 40) { title = 'Keep Studying'; sub = 'Room for improvement'; }
+  else { title = 'Need More Practice'; sub = 'Review the material carefully'; }
+  
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  
+  let secHtml = '';
+  sections.forEach(sec => {
+    const qs = getSectionQuestions(sec);
+    const correct = qs.filter(q => answers[q.number] === q.correct_answer).length;
+    const secPct = Math.round(correct / qs.length * 100);
+    const color = secPct >= 60 ? 'var(--correct)' : 'var(--wrong)';
+    secHtml += `<div class="section-result-card">
+      <div class="sec-name">${sec}</div>
+      <div class="sec-score" style="color:${color}">${correct}/${qs.length} (${secPct}%)</div>
+    </div>`;
+  });
+  document.getElementById('sectionResults').innerHTML = secHtml;
+  window.scrollTo({ top: 0 });
+}
+
+function reviewAnswers() {
+  reviewMode = true;
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('examScreen').classList.add('active');
+  currentSection = 'Surgery';
+  currentQIndex = 0;
+  renderQuestion();
+  window.scrollTo({ top: 0 });
+}
+
+function backToResults() {
+  reviewMode = false;
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  window.scrollTo({ top: 0 });
+}
+
+function restartExam() {
+  answers = {};
+  examSubmitted = false;
+  reviewMode = false;
+  currentSection = 'Surgery';
+  currentQIndex = 0;
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('examScreen').classList.remove('active');
+  document.getElementById('examScreen').classList.add('active');
+  renderSectionTabs();
+  renderQuestion();
+  window.scrollTo({ top: 0 });
+}
+</script>
+</body>
+</html>
