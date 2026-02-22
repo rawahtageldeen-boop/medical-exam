@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudan Medical Permanent Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b10;
+  --card: #15172a;
+  --card-hover: #1c1f38;
+  --border: #252845;
+  --text: #e8eaf6;
+  --text-dim: #7b7fa3;
+  --accent: #7c3aed;
+  --accent2: #a78bfa;
+  --accent-glow: rgba(124,58,237,0.25);
+  --surgery: #f87171;
+  --medicine: #a78bfa;
+  --obgyn: #34d399;
+  --pediatrics: #fbbf24;
+  --gold: #f59e0b;
+  --gold-glow: rgba(245,158,11,0.15);
+  --gradient1: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
+  --gradient-gold: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-effects {
+  position: fixed; top:0;left:0;width:100%;height:100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.bg-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.12;
+  animation: float 20s ease-in-out infinite;
+}
+.bg-orb:nth-child(1) { width:500px;height:500px;background:#7c3aed;top:-10%;right:-5%; }
+.bg-orb:nth-child(2) { width:400px;height:400px;background:#a78bfa;bottom:-10%;left:-5%;animation-delay:-7s; }
+.bg-orb:nth-child(3) { width:300px;height:300px;background:#34d399;top:40%;left:30%;animation-delay:-14s; }
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+.bg-grid {
+  position: fixed; top:0;left:0;width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.container {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto; padding: 20px;
+}
+.header {
+  text-align: center;
+  padding: 60px 20px 40px;
+  animation: fadeDown 0.8s ease;
+}
+@keyframes fadeDown { from { opacity:0; transform:translateY(-30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+.logo {
+  width: 90px; height: 90px;
+  background: var(--gradient1);
+  border-radius: 28px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 28px; font-size: 42px;
+  box-shadow: 0 12px 40px var(--accent-glow);
+  position: relative;
+}
+.logo::after {
+  content:''; position:absolute; inset:-3px;
+  border-radius:30px; background:var(--gradient1);
+  z-index:-1; opacity:0.4; filter:blur(12px);
+}
+.site-title {
+  font-size: 2.4rem; font-weight: 900;
+  margin-bottom: 12px;
+  background: var(--gradient1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stats-strip {
+  display: flex; justify-content: center; gap: 24px;
+  margin: 20px 0 48px;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+.strip-item { text-align: center; }
+.strip-num { font-size: 1.8rem; font-weight: 800; color: var(--accent2); }
+.strip-label { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+
+.loading-msg {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-dim); font-size: 1rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.error-msg {
+  text-align: center; padding: 30px 20px;
+  color: var(--surgery); font-size: 0.95rem;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 16px;
+}
+
+.exam-list {
+  animation: fadeUp 0.8s ease 0.3s both;
+  margin-bottom: 40px;
+}
+
+.exam-item {
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; transition: all 0.25s;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  margin-bottom: 10px;
+}
+.exam-item:hover {
+  background: var(--card-hover);
+  border-color: var(--accent);
+  transform: translateX(-4px);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.exam-item.gold-item {
+  background: linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(251,191,36,0.04) 100%);
+  border-color: rgba(245,158,11,0.3);
+}
+.exam-item.gold-item:hover {
+  background: linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(251,191,36,0.08) 100%);
+  border-color: var(--gold);
+  box-shadow: 0 4px 24px var(--gold-glow);
+}
+.exam-item.gold-item .item-num {
+  background: var(--gradient-gold);
+  box-shadow: 0 2px 12px var(--gold-glow);
+}
+.exam-item.gold-item .item-title { color: var(--gold); font-size: 1.05rem; }
+.exam-item.gold-item:hover .item-arrow { color: var(--gold); }
+
+.item-right { display: flex; align-items: center; gap: 12px; }
+
+.item-num {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.85rem; color: #fff; flex-shrink: 0;
+}
+
+.item-info { display: flex; flex-direction: column; gap: 2px; }
+.item-title { font-size: 1rem; font-weight: 700; }
+.item-meta { font-size: 0.78rem; color: var(--text-dim); }
+
+.section-dots { display: flex; gap: 4px; margin-top: 4px; }
+.sec-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.item-arrow { color: var(--text-dim); font-size: 1rem; transition: all 0.25s; }
+.exam-item:hover .item-arrow { color: var(--accent2); transform: translateX(-4px); }
+
+.footer {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-dim); font-size: 1.05rem; font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .header { padding: 40px 16px 24px; }
+  .site-title { font-size: 1.7rem; }
+  .stats-strip { gap: 16px; }
+  .strip-num { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">🩺</div>
+    <h1 class="site-title">Sudan Medical Permanent Exam</h1>
+  </div>
+
+  <div class="stats-strip">
+    <div class="strip-item">
+      <div class="strip-num" id="totalExams">—</div>
+      <div class="strip-label">امتحانات</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-num" id="totalQuestions">—</div>
+      <div class="strip-label">سؤال</div>
+    </div>
+  </div>
+
+  <div class="exam-list" id="examList">
+    <div class="loading-msg">جاري تحميل الامتحانات...</div>
+  </div>
+
+  <div class="footer">
+    دعواتنا تسبق أمنياتنا لكم بنجاح يثلج الصدور 🌹
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCsr6BkD9Egntq_1rCQfb2GMzCXu4mPU-k",
+  authDomain: "sudan-medical-exam-ea177.firebaseapp.com",
+  projectId: "sudan-medical-exam-ea177",
+  storageBucket: "sudan-medical-exam-ea177.firebasestorage.app",
+  messagingSenderId: "264853458575",
+  appId: "1:264853458575:web:c55bd58cfcd089dded2afa"
+});
+var db = firebase.firestore();
+
+function goToExam(examId) {
+  window.location.href = 'exam.html?exam=' + examId;
+}
+
+async function loadExams() {
+  try {
+    var snapshot = await db.collection('questions').get();
+
+    var examCounts = {};
+    var grandTotal = 0;
+
+    snapshot.forEach(function(doc) {
+      var d = doc.data();
+      var eid = d.exam_id || 'unknown';
+      if (!examCounts[eid]) {
+        examCounts[eid] = { total: 0, Surgery: 0, Medicine: 0, 'OB/GYN': 0, Pediatrics: 0 };
+      }
+      examCounts[eid].total++;
+      if (d.section && examCounts[eid][d.section] !== undefined) {
+        examCounts[eid][d.section]++;
+      }
+      grandTotal++;
+    });
+
+    var examIds = Object.keys(examCounts).sort();
+    var examCount = examIds.length;
+
+    document.getElementById('totalExams').textContent = examCount;
+    document.getElementById('totalQuestions').textContent = grandTotal;
+
+    var html = '';
+
+    html += '<div class="exam-item gold-item" onclick="goToExam(\'all\')">' +
+      '<div class="item-right">' +
+        '<div class="item-num">\uD83D\uDCDA</div>' +
+        '<div class="item-info">' +
+          '<div class="item-title">\u062c\u0645\u064a\u0639 \u0627\u0644\u0627\u0645\u062a\u062d\u0627\u0646\u0627\u062a</div>' +
+          '<div class="item-meta">' + grandTotal + ' \u0633\u0624\u0627\u0644</div>' +
+        '</div>' +
+      '</div>' +
+      '<span class="item-arrow">\u2190</span>' +
+    '</div>';
+
+    for (var i = 0; i < examIds.length; i++) {
+      var eid = examIds[i];
+      var c = examCounts[eid];
+      var num = i + 1;
+
+      html += '<div class="exam-item" onclick="goToExam(\'' + eid + '\')">' +
+        '<div class="item-right">' +
+          '<div class="item-num">' + num + '</div>' +
+          '<div class="item-info">' +
+            '<div class="item-title">\u0627\u0645\u062a\u062d\u0627\u0646 ' + num + '</div>' +
+            '<div class="item-meta">' + c.total + ' \u0633\u0624\u0627\u0644</div>' +
+            '<div class="section-dots">' +
+              '<div class="sec-dot" style="background:var(--surgery)" title="Surgery: ' + c.Surgery + '"></div>' +
+              '<div class="sec-dot" style="background:var(--medicine)" title="Medicine: ' + c.Medicine + '"></div>' +
+              '<div class="sec-dot" style="background:var(--obgyn)" title="OB/GYN: ' + c['OB/GYN'] + '"></div>' +
+              '<div class="sec-dot" style="background:var(--pediatrics)" title="Pediatrics: ' + c.Pediatrics + '"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<span class="item-arrow">\u2190</span>' +
+      '</div>';
+    }
+
+    document.getElementById('examList').innerHTML = html;
+
+  } catch (e) {
+    document.getElementById('examList').innerHTML =
+      '<div class="error-msg">\u274c \u062e\u0637\u0623 \u0641\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0627\u0645\u062a\u062d\u0627\u0646\u0627\u062a<br><small>' + e.message + '</small></div>';
+  }
+}
+
+loadExams();
+</script>
+</body>
+</html>
