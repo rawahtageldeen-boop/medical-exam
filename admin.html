@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم — منصة الامتياز الطبي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --primary: #0D9488;
+  --primary-dark: #0F766E;
+  --primary-light: #CCFBF1;
+  --sidebar-bg: #0F172A;
+  --sidebar-hover: #1E293B;
+  --sidebar-active: #0D9488;
+  --bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: #E2E8F0;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --surgery: #f87171;
+  --medicine: #a78bfa;
+  --obgyn: #34d399;
+  --pediatrics: #fbbf24;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* LOGIN */
+.login-screen { display:none; min-height:100vh; background:linear-gradient(135deg,#0F172A 0%,#1E293B 50%,#0F766E 100%); align-items:center; justify-content:center; padding:2rem; }
+.login-screen.active { display:flex; }
+.login-card { background:#fff; border-radius:20px; padding:3rem 2.5rem; width:100%; max-width:420px; box-shadow:0 25px 60px rgba(0,0,0,0.3); text-align:center; }
+.login-logo { width:70px; height:70px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:28px; color:#fff; }
+.login-card h1 { font-size:1.5rem; font-weight:800; margin-bottom:0.5rem; }
+.login-card p { color:var(--text-light); margin-bottom:2rem; font-size:0.95rem; }
+.login-field { position:relative; margin-bottom:1rem; }
+.login-field i { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:0.9rem; }
+.login-field input { width:100%; padding:14px 44px 14px 14px; border:2px solid var(--border); border-radius:12px; font-family:'Tajawal',sans-serif; font-size:0.95rem; outline:none; transition:all 0.3s; }
+.login-field input:focus { border-color:var(--primary); box-shadow:0 0 0 4px rgba(13,148,136,0.1); }
+.login-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; border:none; border-radius:12px; font-family:'Tajawal',sans-serif; font-size:1.05rem; font-weight:700; cursor:pointer; transition:all 0.3s; margin-top:0.5rem; }
+.login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(13,148,136,0.35); }
+.login-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.login-error { color:var(--danger); font-size:0.85rem; margin-top:0.75rem; min-height:20px; }
+
+/* APP LAYOUT */
+.app-layout { display:none; min-height:100vh; }
+.app-layout.active { display:flex; }
+
+/* SIDEBAR */
+.sidebar { width:260px; background:var(--sidebar-bg); color:#fff; position:fixed; top:0; right:0; bottom:0; z-index:100; display:flex; flex-direction:column; }
+.sidebar-header { padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
+.sidebar-brand { display:flex; align-items:center; gap:12px; }
+.sidebar-brand-icon { width:42px; height:42px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.sidebar-brand-text h3 { font-size:1rem; font-weight:700; margin-bottom:2px; }
+.sidebar-brand-text span { font-size:0.75rem; color:rgba(255,255,255,0.5); }
+.sidebar-nav { flex:1; padding:1rem 0.75rem; }
+.sidebar-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.3); padding:1rem 1rem 0.5rem; font-weight:500; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:10px; cursor:pointer; transition:all 0.2s; color:rgba(255,255,255,0.6); font-size:0.9rem; font-weight:500; margin-bottom:2px; }
+.nav-item:hover { background:var(--sidebar-hover); color:#fff; }
+.nav-item.active { background:var(--sidebar-active); color:#fff; }
+.nav-item i { width:20px; text-align:center; font-size:0.95rem; }
+.nav-item.disabled { opacity:0.35; cursor:default; }
+.nav-item.disabled:hover { background:transparent; color:rgba(255,255,255,0.6); }
+.sidebar-footer { padding:1rem 0.75rem; border-top:1px solid rgba(255,255,255,0.08); }
+.sidebar-user { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; cursor:pointer; }
+.sidebar-user:hover { background:var(--sidebar-hover); }
+.user-avatar { width:36px; height:36px; background:linear-gradient(135deg,var(--primary),#06B6D4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; }
+.user-info { flex:1; }
+.user-info h4 { font-size:0.85rem; font-weight:600; }
+.user-info span { font-size:0.7rem; color:rgba(255,255,255,0.4); }
+
+/* MAIN */
+.main-content { flex:1; margin-right:260px; }
+.topbar { background:#fff; padding:1rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+.topbar-title h2 { font-size:1.3rem; font-weight:700; }
+.topbar-title p { font-size:0.85rem; color:var(--text-light); }
+.topbar-actions { display:flex; gap:10px; }
+.page-content { padding:2rem; }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:10px; font-family:'Tajawal',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(13,148,136,0.3); }
+.btn-outline { background:#fff; color:var(--text); border:2px solid var(--border); }
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-danger:hover { background:#DC2626; }
+.btn-sm { padding:6px 14px; font-size:0.82rem; border-radius:8px; }
+.btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem; margin-bottom:2rem; }
+.stat-card { background:#fff; border-radius:16px; padding:1.5rem; border:1px solid var(--border); transition:all 0.3s; }
+.stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.06); }
+.stat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:1rem; }
+.stat-icon.blue { background:#DBEAFE; color:#2563EB; }
+.stat-icon.green { background:var(--success-light); color:var(--success); }
+.stat-icon.amber { background:var(--warning-light); color:var(--warning); }
+.stat-value { font-size:2rem; font-weight:800; line-height:1; margin-bottom:0.3rem; }
+.stat-label { font-size:0.85rem; color:var(--text-light); font-weight:500; }
+
+/* CARDS */
+.section-card { background:#fff; border-radius:16px; border:1px solid var(--border); overflow:hidden; }
+.section-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.section-header h3 { font-size:1.05rem; font-weight:700; }
+.search-box { position:relative; }
+.search-box i { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:0.85rem; }
+.search-box input { padding:8px 38px 8px 14px; border:2px solid var(--border); border-radius:10px; font-family:'Tajawal',sans-serif; font-size:0.85rem; width:250px; outline:none; transition:all 0.3s; }
+.search-box input:focus { border-color:var(--primary); }
+
+/* EXAM CARDS */
+.exams-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.25rem; padding:1.5rem; }
+.exam-card { background:var(--bg); border:2px solid var(--border); border-radius:14px; padding:1.25rem; transition:all 0.3s; cursor:pointer; position:relative; }
+.exam-card:hover { border-color:var(--primary); box-shadow:0 4px 16px rgba(13,148,136,0.12); }
+.exam-card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem; }
+.exam-title { font-size:1.05rem; font-weight:700; margin-bottom:4px; }
+.exam-date { font-size:0.78rem; color:var(--text-light); }
+.exam-menu-btn { background:none; border:none; color:var(--text-light); cursor:pointer; padding:4px 8px; border-radius:6px; font-size:1.1rem; }
+.exam-menu-btn:hover { background:var(--border); color:var(--text); }
+.exam-sections { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1rem; }
+.section-tag { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:600; }
+.section-tag.surgery { background:rgba(248,113,113,0.15); color:#DC2626; }
+.section-tag.medicine { background:rgba(167,139,250,0.15); color:#7C3AED; }
+.section-tag.obgyn { background:rgba(52,211,153,0.15); color:#059669; }
+.section-tag.pediatrics { background:rgba(251,191,36,0.15); color:#D97706; }
+.section-tag .count { background:rgba(0,0,0,0.1); padding:1px 6px; border-radius:5px; font-size:0.7rem; }
+.exam-stats { display:flex; gap:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
+.exam-stat { display:flex; align-items:center; gap:6px; font-size:0.82rem; color:var(--text-light); }
+
+/* QUESTIONS */
+.back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--text-light); font-size:0.9rem; cursor:pointer; padding:6px 0; margin-bottom:1rem; font-weight:500; background:none; border:none; font-family:'Tajawal',sans-serif; }
+.back-btn:hover { color:var(--primary); }
+.section-divider { padding:12px 1.5rem; background:var(--bg); font-weight:700; font-size:0.95rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.section-dot { width:10px; height:10px; border-radius:50%; }
+.section-dot.surgery { background:var(--surgery); }
+.section-dot.medicine { background:var(--medicine); }
+.section-dot.obgyn { background:var(--obgyn); }
+.section-dot.pediatrics { background:var(--pediatrics); }
+
+.question-row { padding:1rem 1.5rem; border-bottom:1px solid var(--border); transition:background 0.2s; }
+.question-row:hover { background:#F8FAFC; }
+.q-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:0.75rem; }
+.q-number { background:var(--primary-light); color:var(--primary-dark); font-weight:700; font-size:0.78rem; padding:4px 10px; border-radius:8px; white-space:nowrap; }
+.q-text { font-size:0.92rem; font-weight:500; line-height:1.6; flex:1; }
+.q-actions { display:flex; gap:6px; }
+.q-action-btn { background:none; border:none; color:var(--text-light); cursor:pointer; padding:6px 8px; border-radius:6px; font-size:0.85rem; transition:all 0.2s; }
+.q-action-btn:hover { background:var(--border); }
+.q-action-btn.edit:hover { color:var(--primary); }
+.q-action-btn.delete:hover { color:var(--danger); background:var(--danger-light); }
+.q-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-right:52px; }
+.q-option { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; font-size:0.85rem; background:#F8FAFC; border:1px solid var(--border); }
+.q-option.correct { background:var(--success-light); border-color:var(--success); color:#065F46; font-weight:600; }
+.q-option-letter { font-weight:700; font-size:0.82rem; color:var(--text-light); }
+.q-option.correct .q-option-letter { color:var(--success); }
+
+/* MODAL */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.5); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:2rem; }
+.modal-overlay.active { display:flex; }
+.modal { background:#fff; border-radius:20px; width:100%; max-width:560px; box-shadow:0 25px 60px rgba(0,0,0,0.2); overflow:hidden; max-height:90vh; overflow-y:auto; }
+.modal-header { padding:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#fff; z-index:1; }
+.modal-header h3 { font-size:1.1rem; font-weight:700; }
+.modal-close { background:none; border:none; font-size:1.2rem; color:var(--text-light); cursor:pointer; padding:4px 8px; border-radius:6px; }
+.modal-close:hover { background:var(--border); }
+.modal-body { padding:1.5rem; }
+.modal-footer { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-start; position:sticky; bottom:0; background:#fff; }
+
+.upload-zone { border:2px dashed var(--border); border-radius:14px; padding:3rem 2rem; text-align:center; cursor:pointer; transition:all 0.3s; margin-bottom:1.25rem; }
+.upload-zone:hover, .upload-zone.dragover { border-color:var(--primary); background:var(--primary-light); }
+.upload-zone.has-file { border-color:var(--success); background:var(--success-light); }
+.upload-zone i { font-size:2.5rem; color:var(--primary); margin-bottom:1rem; }
+.upload-zone h4 { font-size:1rem; font-weight:700; margin-bottom:0.3rem; }
+.upload-zone p { font-size:0.82rem; color:var(--text-light); }
+
+.form-field { margin-bottom:1rem; }
+.form-field label { display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; }
+.form-field input, .form-field select, .form-field textarea { width:100%; padding:10px 14px; border:2px solid var(--border); border-radius:10px; font-family:'Tajawal',sans-serif; font-size:0.9rem; outline:none; transition:all 0.3s; }
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(13,148,136,0.1); }
+.form-field textarea { resize:vertical; min-height:80px; }
+
+.form-row { display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:center; margin-bottom:8px; }
+.form-row label { font-size:0.85rem; font-weight:600; white-space:nowrap; }
+.correct-radio { display:flex; align-items:center; gap:6px; }
+.correct-radio input[type="radio"] { accent-color:var(--primary); }
+
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); padding:14px 28px; border-radius:12px; color:#fff; font-family:'Tajawal',sans-serif; font-weight:600; font-size:0.9rem; z-index:500; transition:transform 0.4s ease; display:flex; align-items:center; gap:10px; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.success { background:var(--success); }
+.toast.error { background:var(--danger); }
+
+.loading-spinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.empty-state { text-align:center; padding:60px 20px; color:var(--text-light); }
+.empty-state i { font-size:3rem; margin-bottom:1rem; opacity:0.3; }
+.empty-state h4 { font-size:1.1rem; font-weight:700; margin-bottom:0.5rem; color:var(--text); }
+
+.confirm-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:300; align-items:center; justify-content:center; padding:2rem; }
+.confirm-overlay.active { display:flex; }
+.confirm-box { background:#fff; border-radius:16px; padding:2rem; max-width:400px; width:100%; text-align:center; }
+.confirm-box h4 { font-size:1.1rem; font-weight:700; margin-bottom:0.5rem; }
+.confirm-box p { color:var(--text-light); margin-bottom:1.5rem; font-size:0.9rem; }
+.confirm-actions { display:flex; gap:10px; justify-content:center; }
+
+@media(max-width:768px) {
+  .sidebar { transform:translateX(100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main-content { margin-right:0; }
+  .q-options { grid-template-columns:1fr; padding-right:0; }
+  .exams-grid { grid-template-columns:1fr; }
+  .topbar { padding:1rem; }
+  .page-content { padding:1rem; }
+  .mobile-toggle { display:flex !important; }
+}
+.mobile-toggle { display:none; background:var(--primary); color:#fff; border:none; width:44px; height:44px; border-radius:12px; align-items:center; justify-content:center; font-size:1.2rem; cursor:pointer; position:fixed; bottom:20px; right:20px; z-index:150; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+
+.nav-badge { background:var(--danger); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 7px; border-radius:10px; margin-right:auto; min-width:20px; text-align:center; }
+.nav-badge:empty { display:none; }
+
+.inbox-list { padding:1rem 1.5rem; }
+.inbox-item { background:var(--bg); border:2px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1rem; transition:all 0.2s; position:relative; }
+.inbox-item:hover { border-color:var(--primary); }
+.inbox-item-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.75rem; gap:10px; }
+.inbox-item-meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:0.75rem; }
+.inbox-tag { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:600; background:rgba(13,148,136,0.1); color:var(--primary-dark); }
+.inbox-tag.exam { background:rgba(37,99,235,0.1); color:#2563EB; }
+.inbox-tag.section { background:rgba(167,139,250,0.15); color:#7C3AED; }
+.inbox-tag.answer { background:rgba(16,185,129,0.1); color:#059669; }
+.inbox-tag.date { background:rgba(100,116,139,0.1); color:#64748B; }
+.inbox-body { font-size:0.9rem; line-height:1.7; color:var(--text); margin-bottom:0.75rem; background:#fff; padding:1rem; border-radius:10px; border:1px solid var(--border); }
+.inbox-actions { display:flex; gap:8px; justify-content:flex-end; }
+.inbox-empty { text-align:center; padding:60px 20px; color:var(--text-light); }
+.inbox-empty i { font-size:3rem; margin-bottom:1rem; opacity:0.3; }
+.inbox-email { font-size:0.82rem; color:var(--primary); font-weight:500; }
+.inbox-file-link { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; background:rgba(37,99,235,0.08); color:#2563EB; font-size:0.82rem; font-weight:600; text-decoration:none; transition:all 0.2s; }
+.inbox-file-link:hover { background:rgba(37,99,235,0.15); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen active" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo"><i class="fas fa-stethoscope"></i></div>
+    <h1>لوحة التحكم</h1>
+    <p>منصة الامتياز الطبي السوداني</p>
+    <div class="login-field"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="البريد الإلكتروني"></div>
+    <div class="login-field"><i class="fas fa-lock"></i><input type="password" id="loginPass" placeholder="كلمة المرور" onkeypress="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">تسجيل الدخول</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app-layout" id="appLayout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon"><i class="fas fa-stethoscope"></i></div>
+        <div class="sidebar-brand-text"><h3>الامتياز الطبي</h3><span>لوحة التحكم</span></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">الرئيسية</div>
+      <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard"><i class="fas fa-th-large"></i> نظرة عامة</div>
+      <div class="sidebar-label">المحتوى</div>
+      <div class="nav-item" onclick="navigate('exams')" id="nav-exams"><i class="fas fa-file-medical"></i> الامتحانات</div>
+      <div class="sidebar-label">البريد الوارد</div>
+      <div class="nav-item" onclick="navigate('corrections')" id="nav-corrections"><i class="fas fa-pen-fancy"></i> تصحيحات <span class="nav-badge" id="badgeCorrections"></span></div>
+      <div class="nav-item" onclick="navigate('suggested')" id="nav-suggested"><i class="fas fa-file-upload"></i> امتحانات مقترحة <span class="nav-badge" id="badgeSuggested"></span></div>
+      <div class="nav-item" onclick="navigate('messages')" id="nav-messages"><i class="fas fa-comment-dots"></i> الرسائل <span class="nav-badge" id="badgeMessages"></span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="doLogout()">
+        <div class="user-avatar" id="userInitial">م</div>
+        <div class="user-info"><h4 id="userEmail">المدير</h4><span>تسجيل خروج</span></div>
+        <i class="fas fa-sign-out-alt" style="color:rgba(255,255,255,0.3);margin-right:auto;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- DASHBOARD -->
+    <div id="view-dashboard">
+      <div class="topbar">
+        <div class="topbar-title"><h2>نظرة عامة</h2><p>مرحباً بك في لوحة التحكم</p></div>
+      </div>
+      <div class="page-content">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-file-medical"></i></div><div class="stat-value" id="statExams">-</div><div class="stat-label">امتحانات</div></div>
+          <div class="stat-card"><div class="stat-icon green"><i class="fas fa-question-circle"></i></div><div class="stat-value" id="statQuestions">-</div><div class="stat-label">سؤال</div></div>
+          <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-layer-group"></i></div><div class="stat-value" id="statSections">4</div><div class="stat-label">أقسام</div></div>
+          <div class="stat-card" style="cursor:pointer" onclick="navigate('corrections')"><div class="stat-icon" style="background:#FEE2E2;color:#EF4444;"><i class="fas fa-pen-fancy"></i></div><div class="stat-value" id="statCorrections">-</div><div class="stat-label">تصحيحات واردة</div></div>
+          <div class="stat-card" style="cursor:pointer" onclick="navigate('suggested')"><div class="stat-icon" style="background:#DBEAFE;color:#2563EB;"><i class="fas fa-file-upload"></i></div><div class="stat-value" id="statSuggested">-</div><div class="stat-label">امتحانات مقترحة</div></div>
+          <div class="stat-card" style="cursor:pointer" onclick="navigate('messages')"><div class="stat-icon" style="background:#E0E7FF;color:#6366F1;"><i class="fas fa-comment-dots"></i></div><div class="stat-value" id="statMessages">-</div><div class="stat-label">رسائل</div></div>
+        </div>
+        <div class="section-card">
+          <div class="section-header"><h3>الامتحانات</h3></div>
+          <div id="dashExams" class="exams-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMS -->
+    <div id="view-exams" style="display:none">
+      <div class="topbar">
+        <div class="topbar-title"><h2>الامتحانات</h2><p>إدارة جميع الامتحانات والأسئلة</p></div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline" onclick="openUploadModal()"><i class="fas fa-upload"></i> رفع ملف JSON</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="section-card">
+          <div class="section-header"><h3>جميع الامتحانات</h3>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="بحث..." id="examSearch" oninput="renderExams()"></div>
+          </div>
+          <div id="examsList" class="exams-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div id="view-questions" style="display:none">
+      <div class="topbar">
+        <div class="topbar-title"><h2 id="qExamTitle">-</h2><p id="qExamSub">-</p></div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline btn-sm" onclick="openAddQuestion()"><i class="fas fa-plus"></i> إضافة سؤال</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDeleteExam()"><i class="fas fa-trash"></i> حذف الامتحان</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <button class="back-btn" onclick="navigate('exams')"><i class="fas fa-arrow-right"></i> رجوع للامتحانات</button>
+        <div class="section-card">
+          <div class="section-header"><h3 id="qCount">-</h3>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="بحث في الأسئلة..." id="qSearch" oninput="renderQuestions()"></div>
+          </div>
+          <div id="questionsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORRECTIONS -->
+    <div id="view-corrections" style="display:none">
+      <div class="topbar">
+        <div class="topbar-title"><h2>تصحيحات الإجابات</h2><p>طلبات تصحيح واردة من المستخدمين</p></div>
+      </div>
+      <div class="page-content">
+        <div class="section-card">
+          <div class="section-header"><h3 id="correctionsCount">-</h3></div>
+          <div id="correctionsList" class="inbox-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUGGESTED EXAMS -->
+    <div id="view-suggested" style="display:none">
+      <div class="topbar">
+        <div class="topbar-title"><h2>امتحانات مقترحة</h2><p>امتحانات أرسلها المستخدمون</p></div>
+      </div>
+      <div class="page-content">
+        <div class="section-card">
+          <div class="section-header"><h3 id="suggestedCount">-</h3></div>
+          <div id="suggestedList" class="inbox-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="view-messages" style="display:none">
+      <div class="topbar">
+        <div class="topbar-title"><h2>الرسائل</h2><p>ملاحظات واقتراحات عامة</p></div>
+      </div>
+      <div class="page-content">
+        <div class="section-card">
+          <div class="section-header"><h3 id="messagesCount">-</h3></div>
+          <div id="messagesList" class="inbox-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MOBILE TOGGLE -->
+<button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header"><h3><i class="fas fa-upload" style="color:var(--primary);margin-left:8px;"></i> رفع ملف امتحان</h3><button class="modal-close" onclick="closeModal('uploadModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+        <i class="fas fa-cloud-upload-alt" id="uploadIcon"></i>
+        <h4 id="uploadText">اسحب الملف هنا أو اضغط للاختيار</h4>
+        <p id="uploadSub">ملف JSON جاهز</p>
+      </div>
+      <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      <div class="form-field"><label>اسم الامتحان</label><input type="text" id="uploadName" placeholder="مثال: امتحان الامتياز الطبي 2025"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="uploadBtn" onclick="doUpload()" disabled><i class="fas fa-upload"></i> رفع الامتحان</button>
+      <button class="btn btn-outline" onclick="closeModal('uploadModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT QUESTION MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="editModalTitle"><i class="fas fa-pen" style="color:var(--primary);margin-left:8px;"></i> تعديل السؤال</h3><button class="modal-close" onclick="closeModal('editModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-field"><label>نص السؤال</label><textarea id="editQText" rows="3"></textarea></div>
+      <div class="form-field"><label>القسم</label>
+        <select id="editQSection"><option value="Surgery">Surgery</option><option value="Medicine">Medicine</option><option value="OB/GYN">OB/GYN</option><option value="Pediatrics">Pediatrics</option></select>
+      </div>
+      <div class="form-field"><label>الخيارات والإجابة الصحيحة</label></div>
+      <div id="editOptions"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="editSaveBtn" onclick="saveQuestion()"><i class="fas fa-check"></i> حفظ</button>
+      <button class="btn btn-outline" onclick="closeModal('editModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h4 id="confirmTitle">تأكيد الحذف</h4>
+    <p id="confirmMsg">هل أنت متأكد؟</p>
+    <div class="confirm-actions">
+      <button class="btn btn-danger" id="confirmYes">نعم، احذف</button>
+      <button class="btn btn-outline" onclick="closeConfirm()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCsr6BkD9Egntq_1rCQfb2GMzCXu4mPU-k",
+  authDomain: "sudan-medical-exam-ea177.firebaseapp.com",
+  projectId: "sudan-medical-exam-ea177",
+  storageBucket: "sudan-medical-exam-ea177.firebasestorage.app",
+  messagingSenderId: "264853458575",
+  appId: "1:264853458575:web:c55bd58cfcd089dded2afa"
+});
+var db = firebase.firestore();
+var auth = firebase.auth();
+
+var allExams = [];
+var currentExamId = null;
+var currentQuestions = [];
+var uploadedData = null;
+var editingDocId = null;
+
+// AUTH
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById('loginScreen').classList.remove('active');
+    document.getElementById('appLayout').classList.add('active');
+    document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+    loadAllData();
+  } else {
+    document.getElementById('loginScreen').classList.add('active');
+    document.getElementById('appLayout').classList.remove('active');
+  }
+});
+
+function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  var btn = document.getElementById('loginBtn');
+  var err = document.getElementById('loginError');
+  if (!email || !pass) { err.textContent = 'أدخل البريد وكلمة المرور'; return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>';
+  err.textContent = '';
+  auth.signInWithEmailAndPassword(email, pass).catch(function(e) {
+    btn.disabled = false;
+    btn.textContent = 'تسجيل الدخول';
+    err.textContent = e.code === 'auth/invalid-credential' ? 'بريد أو كلمة مرور خاطئة' : e.message;
+  });
+}
+
+function doLogout() { auth.signOut(); }
+
+// NAVIGATION
+function navigate(view) {
+  ['dashboard','exams','questions','corrections','suggested','messages'].forEach(function(v) {
+    document.getElementById('view-'+v).style.display = v === view ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item:not(.disabled)').forEach(function(n) { n.classList.remove('active'); });
+  var nav = document.getElementById('nav-'+view) || document.getElementById('nav-exams');
+  if (nav) nav.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  if (view === 'corrections') loadCorrections();
+  if (view === 'suggested') loadSuggested();
+  if (view === 'messages') loadMessages();
+}
+
+// LOAD DATA
+async function loadAllData() {
+  try {
+    var snap = await db.collection('exams').get();
+    allExams = [];
+    var totalQ = 0;
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      allExams.push({ id: doc.id, name: d.name || doc.id, total: d.total_questions || 0, surgery: d.surgery || 0, medicine: d.medicine || 0, obgyn: d.obgyn || 0, pediatrics: d.pediatrics || 0, order: d.order || 99 });
+      totalQ += d.total_questions || 0;
+    });
+    allExams.sort(function(a,b) { return a.order - b.order; });
+    document.getElementById('statExams').textContent = allExams.length;
+    document.getElementById('statQuestions').textContent = totalQ;
+    renderExams();
+    renderDashExams();
+    loadInboxCounts();
+  } catch(e) { showToast('خطأ في تحميل البيانات: ' + e.message, 'error'); }
+}
+
+async function loadInboxCounts() {
+  try {
+    var c = await db.collection('corrections').get();
+    var s = await db.collection('suggested_exams').get();
+    var m = await db.collection('messages').get();
+    document.getElementById('statCorrections').textContent = c.size;
+    document.getElementById('statSuggested').textContent = s.size;
+    document.getElementById('statMessages').textContent = m.size;
+    document.getElementById('badgeCorrections').textContent = c.size || '';
+    document.getElementById('badgeSuggested').textContent = s.size || '';
+    document.getElementById('badgeMessages').textContent = m.size || '';
+  } catch(e) {}
+}
+
+function formatDate(ts) {
+  if (!ts) return '';
+  var d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadCorrections() {
+  var el = document.getElementById('correctionsList');
+  el.innerHTML = '<div class="inbox-empty"><i class="fas fa-spinner fa-spin"></i></div>';
+  try {
+    var snap = await db.collection('corrections').orderBy('created_at','desc').get();
+    document.getElementById('correctionsCount').textContent = snap.size + ' تصحيح';
+    if (snap.empty) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-check-circle"></i><h4>لا توجد تصحيحات</h4></div>'; return; }
+    var html = '';
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      html += '<div class="inbox-item"><div class="inbox-item-header"><div style="flex:1"><div style="font-weight:700;font-size:1rem;margin-bottom:4px">تصحيح إجابة</div></div>' +
+        '<div class="inbox-actions"><button class="btn btn-danger btn-sm" onclick="deleteInbox(\'corrections\',\''+doc.id+'\')"><i class="fas fa-trash"></i></button></div></div>' +
+        '<div class="inbox-item-meta">' +
+        '<span class="inbox-tag exam"><i class="fas fa-file-medical"></i> '+(d.exam||'-')+'</span>' +
+        '<span class="inbox-tag section"><i class="fas fa-layer-group"></i> '+(d.section||'-')+'</span>' +
+        '<span class="inbox-tag answer"><i class="fas fa-check"></i> الإجابة: '+(d.suggested_answer||'-')+'</span>' +
+        '<span class="inbox-tag date"><i class="fas fa-clock"></i> '+formatDate(d.created_at)+'</span></div>' +
+        '<div class="inbox-body"><strong>نص السؤال:</strong><br>'+((d.question_text||'').replace(/\n/g,'<br>'))+'</div>' +
+        (d.reason ? '<div class="inbox-body" style="background:var(--warning-light);border-color:var(--warning)"><strong>السبب / المرجع:</strong><br>'+d.reason.replace(/\n/g,'<br>')+'</div>' : '') +
+        '</div>';
+    });
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-exclamation-triangle"></i><h4>خطأ في التحميل</h4><p>'+e.message+'</p></div>'; }
+}
+
+async function loadSuggested() {
+  var el = document.getElementById('suggestedList');
+  el.innerHTML = '<div class="inbox-empty"><i class="fas fa-spinner fa-spin"></i></div>';
+  try {
+    var snap = await db.collection('suggested_exams').orderBy('created_at','desc').get();
+    document.getElementById('suggestedCount').textContent = snap.size + ' امتحان مقترح';
+    if (snap.empty) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-check-circle"></i><h4>لا توجد امتحانات مقترحة</h4></div>'; return; }
+    var html = '';
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      html += '<div class="inbox-item"><div class="inbox-item-header"><div style="flex:1"><div style="font-weight:700;font-size:1rem;margin-bottom:4px">'+(d.exam_name||'بدون اسم')+'</div></div>' +
+        '<div class="inbox-actions"><button class="btn btn-danger btn-sm" onclick="deleteInbox(\'suggested_exams\',\''+doc.id+'\')"><i class="fas fa-trash"></i></button></div></div>' +
+        '<div class="inbox-item-meta">' +
+        '<span class="inbox-tag date"><i class="fas fa-clock"></i> '+formatDate(d.created_at)+'</span>' +
+        (d.email ? '<span class="inbox-tag"><i class="fas fa-envelope"></i> '+d.email+'</span>' : '') + '</div>' +
+        (d.notes ? '<div class="inbox-body">'+d.notes.replace(/\n/g,'<br>')+'</div>' : '') +
+        (d.exam_file_url ? '<div style="margin-bottom:8px"><a href="'+d.exam_file_url+'" target="_blank" download class="inbox-file-link" style="color:var(--primary);cursor:pointer;text-decoration:none"><i class="fas fa-download"></i> تنزيل: '+d.exam_file_name+'</a></div>' : d.exam_file_name ? '<div style="margin-bottom:8px"><span class="inbox-file-link"><i class="fas fa-file-pdf"></i> '+d.exam_file_name+'</span></div>' : '') +
+        (d.answers_file_url ? '<div><a href="'+d.answers_file_url+'" target="_blank" download class="inbox-file-link" style="color:var(--primary);cursor:pointer;text-decoration:none"><i class="fas fa-download"></i> تنزيل: '+d.answers_file_name+'</a></div>' : d.answers_file_name ? '<div><span class="inbox-file-link"><i class="fas fa-file-alt"></i> '+d.answers_file_name+'</span></div>' : '') +
+        '</div>';
+    });
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-exclamation-triangle"></i><h4>خطأ في التحميل</h4><p>'+e.message+'</p></div>'; }
+}
+
+async function loadMessages() {
+  var el = document.getElementById('messagesList');
+  el.innerHTML = '<div class="inbox-empty"><i class="fas fa-spinner fa-spin"></i></div>';
+  try {
+    var snap = await db.collection('messages').orderBy('created_at','desc').get();
+    document.getElementById('messagesCount').textContent = snap.size + ' رسالة';
+    if (snap.empty) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-check-circle"></i><h4>لا توجد رسائل</h4></div>'; return; }
+    var html = '';
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      html += '<div class="inbox-item"><div class="inbox-item-header"><div style="flex:1"><div style="font-weight:700;font-size:1rem;margin-bottom:4px">ملاحظة عامة</div></div>' +
+        '<div class="inbox-actions"><button class="btn btn-danger btn-sm" onclick="deleteInbox(\'messages\',\''+doc.id+'\')"><i class="fas fa-trash"></i></button></div></div>' +
+        '<div class="inbox-item-meta"><span class="inbox-tag date"><i class="fas fa-clock"></i> '+formatDate(d.created_at)+'</span></div>' +
+        '<div class="inbox-body">'+((d.text||'').replace(/\n/g,'<br>'))+'</div></div>';
+    });
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = '<div class="inbox-empty"><i class="fas fa-exclamation-triangle"></i><h4>خطأ في التحميل</h4><p>'+e.message+'</p></div>'; }
+}
+
+function deleteInbox(collection, docId) {
+  document.getElementById('confirmTitle').textContent = 'حذف';
+  document.getElementById('confirmMsg').textContent = 'هل تريد حذف هذا العنصر؟';
+  document.getElementById('confirmYes').onclick = async function() {
+    closeConfirm();
+    try {
+      await db.collection(collection).doc(docId).delete();
+      showToast('تم الحذف', 'success');
+      if (collection === 'corrections') loadCorrections();
+      if (collection === 'suggested_exams') loadSuggested();
+      if (collection === 'messages') loadMessages();
+      loadInboxCounts();
+    } catch(e) { showToast('خطأ: '+e.message, 'error'); }
+  };
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+// RENDER EXAMS
+function renderExams() {
+  var q = (document.getElementById('examSearch').value || '').trim().toLowerCase();
+  var filtered = allExams.filter(function(e) { return !q || e.name.toLowerCase().indexOf(q) !== -1; });
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) html += examCardHTML(filtered[i]);
+  html += '<div class="exam-card" style="border-style:dashed;opacity:0.6;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;cursor:pointer" onclick="openUploadModal()"><i class="fas fa-plus-circle" style="font-size:2rem;color:var(--text-light);margin-bottom:0.75rem"></i><div style="font-weight:600;color:var(--text-light)">إضافة امتحان جديد</div></div>';
+  document.getElementById('examsList').innerHTML = html;
+}
+
+function renderDashExams() {
+  var html = '';
+  for (var i = 0; i < allExams.length; i++) html += examCardHTML(allExams[i]);
+  if (!allExams.length) html = '<div class="empty-state"><i class="fas fa-file-medical"></i><h4>لا توجد امتحانات بعد</h4><p>ارفع ملف JSON لإضافة أول امتحان</p></div>';
+  document.getElementById('dashExams').innerHTML = html;
+}
+
+function examCardHTML(e) {
+  return '<div class="exam-card" onclick="openExam(\''+e.id+'\')">' +
+    '<div class="exam-card-header"><div><div class="exam-title">'+e.name+'</div><div class="exam-date">'+e.id+'</div></div>' +
+    '<button class="exam-menu-btn" onclick="event.stopPropagation();confirmDeleteExamById(\''+e.id+'\',\''+e.name+'\')"><i class="fas fa-trash" style="color:var(--danger);font-size:0.8rem"></i></button></div>' +
+    '<div class="exam-sections">' +
+    '<span class="section-tag surgery">Surgery <span class="count">'+e.surgery+'</span></span>' +
+    '<span class="section-tag medicine">Medicine <span class="count">'+e.medicine+'</span></span>' +
+    '<span class="section-tag obgyn">OB/GYN <span class="count">'+e.obgyn+'</span></span>' +
+    '<span class="section-tag pediatrics">Pediatrics <span class="count">'+e.pediatrics+'</span></span></div>' +
+    '<div class="exam-stats"><span class="exam-stat"><i class="fas fa-question-circle"></i> '+e.total+' سؤال</span><span class="exam-stat"><i class="fas fa-layer-group"></i> 4 أقسام</span></div></div>';
+}
+
+// OPEN EXAM → LOAD QUESTIONS
+async function openExam(examId) {
+  currentExamId = examId;
+  var exam = allExams.find(function(e) { return e.id === examId; });
+  document.getElementById('qExamTitle').textContent = exam ? exam.name : examId;
+  document.getElementById('qExamSub').textContent = 'جاري التحميل...';
+  navigate('questions');
+
+  try {
+    var snap = await db.collection('questions').where('exam_id','==',examId).get();
+    currentQuestions = [];
+    snap.forEach(function(doc) { var d = doc.data(); d._id = doc.id; currentQuestions.push(d); });
+    currentQuestions.sort(function(a,b) { return (a.number||0) - (b.number||0); });
+    document.getElementById('qExamSub').textContent = currentQuestions.length + ' سؤال — 4 أقسام';
+    document.getElementById('qCount').textContent = currentQuestions.length + ' سؤال';
+    renderQuestions();
+  } catch(e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+
+function renderQuestions() {
+  var q = (document.getElementById('qSearch').value || '').trim().toLowerCase();
+  var filtered = currentQuestions.filter(function(x) { return !q || (x.text||'').toLowerCase().indexOf(q) !== -1; });
+
+  var sections = ['Surgery','Medicine','OB/GYN','Pediatrics'];
+  var html = '';
+  for (var s = 0; s < sections.length; s++) {
+    var sec = sections[s];
+    var secQ = filtered.filter(function(x) { return x.section === sec; });
+    if (!secQ.length) continue;
+    var cls = sec === 'OB/GYN' ? 'obgyn' : sec.toLowerCase();
+    html += '<div class="section-divider"><span class="section-dot '+cls+'"></span>'+sec+' — '+secQ.length+' سؤال</div>';
+    for (var i = 0; i < secQ.length; i++) {
+      var qn = secQ[i];
+      var opts = qn.options || {};
+      var keys = Object.keys(opts).sort();
+      var optsHtml = '';
+      for (var k = 0; k < keys.length; k++) {
+        var isCorrect = keys[k] === qn.answer;
+        optsHtml += '<div class="q-option'+(isCorrect?' correct':'')+'"><span class="q-option-letter">'+keys[k]+'.</span> '+opts[keys[k]]+'</div>';
+      }
+      html += '<div class="question-row"><div class="q-header"><span class="q-number">Q'+(qn.number||'')+'</span><div class="q-text">'+qn.text+'</div>' +
+        '<div class="q-actions"><button class="q-action-btn edit" onclick="openEditQuestion(\''+qn._id+'\')"><i class="fas fa-pen"></i></button>' +
+        '<button class="q-action-btn delete" onclick="confirmDeleteQuestion(\''+qn._id+'\')"><i class="fas fa-trash"></i></button></div></div>' +
+        '<div class="q-options">'+optsHtml+'</div></div>';
+    }
+  }
+  if (!html) html = '<div class="empty-state"><i class="fas fa-search"></i><h4>لا توجد نتائج</h4></div>';
+  document.getElementById('questionsList').innerHTML = html;
+}
+
+// UPLOAD JSON
+function openUploadModal() {
+  uploadedData = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('uploadName').value = '';
+  document.getElementById('uploadBtn').disabled = true;
+  document.getElementById('uploadZone').classList.remove('has-file');
+  document.getElementById('uploadIcon').className = 'fas fa-cloud-upload-alt';
+  document.getElementById('uploadText').textContent = 'اسحب الملف هنا أو اضغط للاختيار';
+  document.getElementById('uploadSub').textContent = 'ملف JSON جاهز';
+  openModal('uploadModal');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+}
+
+function handleFile(file) {
+  if (!file || !file.name.endsWith('.json')) { showToast('الرجاء اختيار ملف JSON', 'error'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      uploadedData = JSON.parse(e.target.result);
+      if (!Array.isArray(uploadedData)) throw new Error('الملف يجب أن يحتوي على مصفوفة أسئلة');
+      document.getElementById('uploadZone').classList.add('has-file');
+      document.getElementById('uploadIcon').className = 'fas fa-check-circle';
+      document.getElementById('uploadIcon').style.color = 'var(--success)';
+      document.getElementById('uploadText').textContent = file.name;
+      document.getElementById('uploadSub').textContent = uploadedData.length + ' سؤال';
+      document.getElementById('uploadBtn').disabled = false;
+    } catch(err) { showToast('ملف غير صالح: ' + err.message, 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+async function doUpload() {
+  if (!uploadedData) return;
+  var name = document.getElementById('uploadName').value.trim();
+  if (!name) { showToast('أدخل اسم الامتحان', 'error'); return; }
+
+  var btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> جاري الرفع...';
+
+  try {
+    var examNum = allExams.length + 1;
+    var examId = 'exam_' + examNum;
+
+    var counts = { Surgery:0, Medicine:0, 'OB/GYN':0, Pediatrics:0 };
+    var batch = db.batch();
+    for (var i = 0; i < uploadedData.length; i++) {
+      var q = uploadedData[i];
+      var section = q.section || 'Medicine';
+      if (counts[section] !== undefined) counts[section]++;
+
+      var opts = {};
+      if (q.options && Array.isArray(q.options)) {
+        for (var j = 0; j < q.options.length; j++) {
+          var letter = q.options[j].letter || String.fromCharCode(65+j);
+          opts[letter.toUpperCase()] = q.options[j].text;
+        }
+      } else if (q.options && typeof q.options === 'object') {
+        opts = q.options;
+      }
+
+      var answer = '';
+      if (q.correct_answer) answer = q.correct_answer.toUpperCase();
+      else if (q.answer) answer = q.answer.toUpperCase();
+      else if (q.options && Array.isArray(q.options)) {
+        for (var j = 0; j < q.options.length; j++) {
+          if (q.options[j].is_correct) { answer = (q.options[j].letter || String.fromCharCode(65+j)).toUpperCase(); break; }
+        }
+      }
+
+      var ref = db.collection('questions').doc();
+      batch.set(ref, {
+        text: q.question || q.text || '',
+        options: opts,
+        answer: answer,
+        section: section,
+        exam_id: examId,
+        number: q.number || (i+1)
+      });
+
+      if ((i+1) % 400 === 0) { await batch.commit(); batch = db.batch(); }
+    }
+
+    var total = uploadedData.length;
+    batch.set(db.collection('exams').doc(examId), {
+      name: name,
+      total_questions: total,
+      surgery: counts['Surgery'],
+      medicine: counts['Medicine'],
+      obgyn: counts['OB/GYN'],
+      pediatrics: counts['Pediatrics'],
+      order: examNum
+    });
+
+    await batch.commit();
+    closeModal('uploadModal');
+    showToast('تم رفع ' + total + ' سؤال بنجاح', 'success');
+    await loadAllData();
+  } catch(e) {
+    showToast('خطأ: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> رفع الامتحان';
+  }
+}
+
+// EDIT QUESTION
+function openEditQuestion(docId) {
+  editingDocId = docId;
+  var q = currentQuestions.find(function(x) { return x._id === docId; });
+  if (!q) return;
+
+  document.getElementById('editModalTitle').innerHTML = '<i class="fas fa-pen" style="color:var(--primary);margin-left:8px"></i> تعديل السؤال Q' + (q.number||'');
+  document.getElementById('editQText').value = q.text || '';
+  document.getElementById('editQSection').value = q.section || 'Medicine';
+
+  var opts = q.options || {};
+  var keys = Object.keys(opts).sort();
+  var html = '';
+  for (var i = 0; i < keys.length; i++) {
+    var isCorrect = keys[i] === q.answer;
+    html += '<div class="form-row"><label>'+keys[i]+'</label><input type="text" id="editOpt'+keys[i]+'" value="'+opts[keys[i]].replace(/"/g,'&quot;')+'"></div>' +
+      '<div class="correct-radio" style="margin-bottom:12px;padding-right:30px"><input type="radio" name="editCorrect" value="'+keys[i]+'"'+(isCorrect?' checked':'')+'> <label style="font-size:0.8rem;color:var(--success)">إجابة صحيحة</label></div>';
+  }
+  document.getElementById('editOptions').innerHTML = html;
+  openModal('editModal');
+}
+
+async function saveQuestion() {
+  if (!editingDocId) return;
+  var btn = document.getElementById('editSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>';
+
+  try {
+    var q = currentQuestions.find(function(x) { return x._id === editingDocId; });
+    var opts = {};
+    var keys = Object.keys(q.options).sort();
+    for (var i = 0; i < keys.length; i++) {
+      opts[keys[i]] = document.getElementById('editOpt'+keys[i]).value;
+    }
+    var correct = document.querySelector('input[name="editCorrect"]:checked');
+
+    await db.collection('questions').doc(editingDocId).update({
+      text: document.getElementById('editQText').value,
+      section: document.getElementById('editQSection').value,
+      options: opts,
+      answer: correct ? correct.value : q.answer
+    });
+
+    closeModal('editModal');
+    showToast('تم حفظ التعديلات', 'success');
+    await openExam(currentExamId);
+    await updateExamMeta(currentExamId);
+  } catch(e) { showToast('خطأ: '+e.message, 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> حفظ'; }
+}
+
+// ADD QUESTION
+function openAddQuestion() {
+  editingDocId = null;
+  document.getElementById('editModalTitle').innerHTML = '<i class="fas fa-plus" style="color:var(--primary);margin-left:8px"></i> إضافة سؤال جديد';
+  document.getElementById('editQText').value = '';
+  document.getElementById('editQSection').value = 'Surgery';
+
+  var letters = ['A','B','C','D'];
+  var html = '';
+  for (var i = 0; i < letters.length; i++) {
+    html += '<div class="form-row"><label>'+letters[i]+'</label><input type="text" id="editOpt'+letters[i]+'" value=""></div>' +
+      '<div class="correct-radio" style="margin-bottom:12px;padding-right:30px"><input type="radio" name="editCorrect" value="'+letters[i]+'"'+(i===0?' checked':'')+'> <label style="font-size:0.8rem;color:var(--success)">إجابة صحيحة</label></div>';
+  }
+  document.getElementById('editOptions').innerHTML = html;
+
+  document.getElementById('editSaveBtn').onclick = saveNewQuestion;
+  openModal('editModal');
+}
+
+async function saveNewQuestion() {
+  var btn = document.getElementById('editSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>';
+
+  try {
+    var text = document.getElementById('editQText').value.trim();
+    if (!text) { showToast('أدخل نص السؤال', 'error'); return; }
+
+    var opts = {};
+    ['A','B','C','D'].forEach(function(l) {
+      var val = document.getElementById('editOpt'+l).value.trim();
+      if (val) opts[l] = val;
+    });
+    var correct = document.querySelector('input[name="editCorrect"]:checked');
+    var maxNum = 0;
+    currentQuestions.forEach(function(q) { if (q.number > maxNum) maxNum = q.number; });
+
+    await db.collection('questions').add({
+      text: text,
+      options: opts,
+      answer: correct ? correct.value : 'A',
+      section: document.getElementById('editQSection').value,
+      exam_id: currentExamId,
+      number: maxNum + 1
+    });
+
+    closeModal('editModal');
+    document.getElementById('editSaveBtn').onclick = saveQuestion;
+    showToast('تمت إضافة السؤال', 'success');
+    await openExam(currentExamId);
+    await updateExamMeta(currentExamId);
+    await loadAllData();
+  } catch(e) { showToast('خطأ: '+e.message, 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> حفظ'; }
+}
+
+// DELETE QUESTION
+function confirmDeleteQuestion(docId) {
+  document.getElementById('confirmTitle').textContent = 'حذف السؤال';
+  document.getElementById('confirmMsg').textContent = 'هل أنت متأكد من حذف هذا السؤال؟';
+  document.getElementById('confirmYes').onclick = async function() {
+    closeConfirm();
+    try {
+      await db.collection('questions').doc(docId).delete();
+      showToast('تم حذف السؤال', 'success');
+      await openExam(currentExamId);
+      await updateExamMeta(currentExamId);
+      await loadAllData();
+    } catch(e) { showToast('خطأ: '+e.message, 'error'); }
+  };
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+// DELETE EXAM
+function confirmDeleteExam() { confirmDeleteExamById(currentExamId, document.getElementById('qExamTitle').textContent); }
+
+function confirmDeleteExamById(examId, examName) {
+  document.getElementById('confirmTitle').textContent = 'حذف الامتحان';
+  document.getElementById('confirmMsg').textContent = 'سيتم حذف "' + examName + '" وجميع أسئلته. هل أنت متأكد؟';
+  document.getElementById('confirmYes').onclick = async function() {
+    closeConfirm();
+    try {
+      showToast('جاري الحذف...', 'success');
+      var snap = await db.collection('questions').where('exam_id','==',examId).get();
+      var batch = db.batch();
+      var count = 0;
+      snap.forEach(function(doc) {
+        batch.delete(doc.ref);
+        count++;
+        if (count % 400 === 0) { batch.commit(); batch = db.batch(); }
+      });
+      batch.delete(db.collection('exams').doc(examId));
+      await batch.commit();
+      showToast('تم حذف الامتحان و '+count+' سؤال', 'success');
+      navigate('exams');
+      await loadAllData();
+    } catch(e) { showToast('خطأ: '+e.message, 'error'); }
+  };
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+// UPDATE EXAM METADATA
+async function updateExamMeta(examId) {
+  try {
+    var snap = await db.collection('questions').where('exam_id','==',examId).get();
+    var counts = { Surgery:0, Medicine:0, 'OB/GYN':0, Pediatrics:0 };
+    var total = 0;
+    snap.forEach(function(doc) {
+      var s = doc.data().section;
+      if (counts[s] !== undefined) counts[s]++;
+      total++;
+    });
+    await db.collection('exams').doc(examId).update({
+      total_questions: total,
+      surgery: counts['Surgery'],
+      medicine: counts['Medicine'],
+      obgyn: counts['OB/GYN'],
+      pediatrics: counts['Pediatrics']
+    });
+  } catch(e) {}
+}
+
+// UTILS
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('active'); }
+
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.className = 'toast ' + (type||'success');
+  t.innerHTML = '<i class="fas fa-'+(type==='error'?'exclamation-circle':'check-circle')+'"></i> ' + msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(function(m) {
+  m.addEventListener('click', function(e) { if (e.target === m) closeModal(m.id); });
+});
+</script>
+</body>
+</html>
