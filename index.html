@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudan Medical Permanent Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b10;
+  --card: #15172a;
+  --card-hover: #1c1f38;
+  --border: #252845;
+  --text: #e8eaf6;
+  --text-dim: #7b7fa3;
+  --accent: #7c3aed;
+  --accent2: #a78bfa;
+  --accent-glow: rgba(124,58,237,0.25);
+  --surgery: #f87171;
+  --medicine: #a78bfa;
+  --obgyn: #34d399;
+  --pediatrics: #fbbf24;
+  --gradient1: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-effects {
+  position: fixed; top:0;left:0;width:100%;height:100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.bg-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.12;
+  animation: float 20s ease-in-out infinite;
+}
+.bg-orb:nth-child(1) { width:500px;height:500px;background:#7c3aed;top:-10%;right:-5%; }
+.bg-orb:nth-child(2) { width:400px;height:400px;background:#a78bfa;bottom:-10%;left:-5%;animation-delay:-7s; }
+.bg-orb:nth-child(3) { width:300px;height:300px;background:#34d399;top:40%;left:30%;animation-delay:-14s; }
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+.bg-grid {
+  position: fixed; top:0;left:0;width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.container {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto; padding: 20px;
+}
+.header {
+  text-align: center;
+  padding: 60px 20px 40px;
+  animation: fadeDown 0.8s ease;
+}
+@keyframes fadeDown { from { opacity:0; transform:translateY(-30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+.logo {
+  width: 90px; height: 90px;
+  background: var(--gradient1);
+  border-radius: 28px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 28px; font-size: 42px;
+  box-shadow: 0 12px 40px var(--accent-glow);
+  position: relative;
+}
+.logo::after {
+  content:''; position:absolute; inset:-3px;
+  border-radius:30px; background:var(--gradient1);
+  z-index:-1; opacity:0.4; filter:blur(12px);
+}
+.site-title {
+  font-size: 2.4rem; font-weight: 900;
+  margin-bottom: 12px;
+  background: var(--gradient1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stats-strip {
+  display: flex; justify-content: center; gap: 24px;
+  margin: 20px 0 48px;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+.strip-item { text-align: center; }
+.strip-num { font-size: 1.8rem; font-weight: 800; color: var(--accent2); }
+.strip-label { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+
+.loading-msg {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-dim); font-size: 1rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.error-msg {
+  text-align: center; padding: 30px 20px;
+  color: var(--surgery); font-size: 0.95rem;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 16px;
+}
+
+.dropdown-area {
+  animation: fadeUp 0.8s ease 0.3s both;
+  margin-bottom: 40px;
+}
+.custom-dropdown { position: relative; }
+
+.dropdown-trigger {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s;
+  user-select: none;
+}
+.dropdown-trigger:hover { border-color: var(--accent); }
+.dropdown-trigger.open {
+  border-color: var(--accent);
+  box-shadow: 0 4px 24px var(--accent-glow);
+  border-radius: 16px 16px 0 0;
+}
+.dropdown-trigger .arrow {
+  transition: transform 0.3s; font-size: 0.9rem; color: var(--text-dim);
+}
+.dropdown-trigger.open .arrow {
+  transform: rotate(180deg); color: var(--accent2);
+}
+
+.dropdown-menu {
+  position: absolute; top: 100%; right: 0; left: 0;
+  background: var(--card);
+  border: 1.5px solid var(--accent); border-top: none;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+  max-height: 0; opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  z-index: 100;
+}
+.dropdown-menu.open {
+  max-height: 500px; opacity: 1;
+  box-shadow: 0 12px 40px var(--accent-glow);
+}
+
+.dropdown-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  z-index: 2; position: relative;
+}
+.dropdown-search input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  outline: none; transition: border-color 0.3s;
+}
+.dropdown-search input::placeholder { color: var(--text-dim); }
+.dropdown-search input:focus { border-color: var(--accent); }
+.dropdown-search-icon {
+  position: absolute; left: 28px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem; color: var(--text-dim); pointer-events: none;
+}
+
+.dropdown-items {
+  max-height: 380px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.dropdown-items::-webkit-scrollbar { width: 6px; }
+.dropdown-items::-webkit-scrollbar-track { background: transparent; }
+.dropdown-items::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.dropdown-item {
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; transition: all 0.2s;
+  border-bottom: 1px solid rgba(37,40,69,0.5);
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: var(--card-hover); }
+.dropdown-item:hover .item-arrow { color: var(--accent2); transform: translateX(-3px); }
+
+.item-right { display: flex; align-items: center; gap: 12px; }
+.item-num {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.8rem; color: #fff; flex-shrink: 0;
+}
+.item-info { display: flex; flex-direction: column; gap: 1px; }
+.item-title { font-size: 0.95rem; font-weight: 700; }
+.item-meta { font-size: 0.75rem; color: var(--text-dim); }
+.item-arrow { color: var(--text-dim); font-size: 0.85rem; transition: all 0.2s; }
+
+.no-results-drop {
+  padding: 24px; text-align: center;
+  color: var(--text-dim); font-size: 0.9rem;
+}
+
+.exam-detail {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 28px; margin-top: 16px;
+  display: none;
+  animation: slideDown 0.4s ease;
+}
+.exam-detail.active { display: block; }
+
+.detail-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 24px;
+}
+.detail-title { font-size: 1.3rem; font-weight: 800; }
+.detail-badge {
+  background: var(--accent); color: #fff;
+  padding: 6px 16px; border-radius: 12px;
+  font-size: 0.85rem; font-weight: 700;
+}
+
+.detail-sections {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; margin-bottom: 24px;
+}
+.detail-sec {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 8px;
+  text-align: center; transition: all 0.3s;
+}
+.detail-sec:hover {
+  border-color: var(--accent);
+  background: rgba(124,58,237,0.05);
+}
+.detail-sec-name { font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; }
+.detail-sec-name.surgery { color: var(--surgery); }
+.detail-sec-name.medicine { color: var(--medicine); }
+.detail-sec-name.obgyn { color: var(--obgyn); }
+.detail-sec-name.pediatrics { color: var(--pediatrics); }
+.detail-sec-count { font-size: 1.3rem; font-weight: 800; }
+.detail-sec-label { font-size: 0.65rem; color: var(--text-dim); }
+
+.btn-start-exam {
+  width: 100%; padding: 16px;
+  border-radius: 14px; border: none;
+  background: var(--gradient1); color: #fff;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.1rem; font-weight: 800;
+  cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.btn-start-exam:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px var(--accent-glow);
+}
+.btn-start-exam:disabled {
+  opacity: 0.6; cursor: wait;
+}
+
+.preload-status {
+  text-align: center; margin-top: 10px;
+  font-size: 0.78rem; color: var(--text-dim);
+  min-height: 20px;
+}
+
+.footer {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-dim); font-size: 1.05rem; font-weight: 500;
+  position: relative; z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .header { padding: 40px 16px 24px; }
+  .site-title { font-size: 1.7rem; }
+  .stats-strip { gap: 16px; }
+  .strip-num { font-size: 1.3rem; }
+  .exam-detail { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">🩺</div>
+    <h1 class="site-title">Sudan Medical Permanent Exam</h1>
+  </div>
+
+  <div class="stats-strip">
+    <div class="strip-item">
+      <div class="strip-num" id="totalExams">—</div>
+      <div class="strip-label">امتحانات</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-num" id="totalQuestions">—</div>
+      <div class="strip-label">سؤال</div>
+    </div>
+  </div>
+
+  <div class="dropdown-area" id="dropdownArea">
+    <div class="loading-msg">جاري تحميل الامتحانات...</div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCsr6BkD9Egntq_1rCQfb2GMzCXu4mPU-k",
+  authDomain: "sudan-medical-exam-ea177.firebaseapp.com",
+  projectId: "sudan-medical-exam-ea177",
+  storageBucket: "sudan-medical-exam-ea177.firebasestorage.app",
+  messagingSenderId: "264853458575",
+  appId: "1:264853458575:web:c55bd58cfcd089dded2afa"
+});
+var db = firebase.firestore();
+db.enablePersistence().catch(function(){});
+
+var exams = [];
+var isOpen = false;
+var preloadedExam = null;
+
+async function loadExams() {
+  try {
+    var snapshot = await db.collection('exams').get();
+    var grandTotal = 0;
+    var examDocs = [];
+
+    snapshot.forEach(function(doc) {
+      var d = doc.data();
+      var total = d.total_questions || 0;
+      grandTotal += total;
+      examDocs.push({
+        id: doc.id,
+        name: d.name || doc.id,
+        total: total,
+        surgery: d.surgery || 0,
+        medicine: d.medicine || 0,
+        obgyn: d.obgyn || 0,
+        pediatrics: d.pediatrics || 0,
+        order: d.order || parseInt(doc.id.replace('exam_','')) || 99
+      });
+    });
+
+    examDocs.sort(function(a, b) { return a.order - b.order; });
+
+    exams = [];
+    if (examDocs.length > 1) {
+      exams.push({
+        id: 'all',
+        name: '\u062c\u0645\u064a\u0639 \u0627\u0644\u0627\u0645\u062a\u062d\u0627\u0646\u0627\u062a',
+        total: grandTotal,
+        icon: '\uD83D\uDCDA',
+        surgery: '\u2014', medicine: '\u2014', obgyn: '\u2014', pediatrics: '\u2014'
+      });
+    }
+
+    for (var i = 0; i < examDocs.length; i++) {
+      var e = examDocs[i];
+      exams.push({
+        id: e.id,
+        name: e.name === e.id ? '\u0627\u0645\u062a\u062d\u0627\u0646 ' + (i + 1) : e.name,
+        total: e.total,
+        num: i + 1,
+        surgery: e.surgery,
+        medicine: e.medicine,
+        obgyn: e.obgyn,
+        pediatrics: e.pediatrics
+      });
+    }
+
+    document.getElementById('totalExams').textContent = examDocs.length;
+    document.getElementById('totalQuestions').textContent = grandTotal;
+
+    buildDropdown();
+  } catch (e) {
+    document.getElementById('dropdownArea').innerHTML =
+      '<div class="error-msg">\u274c \u062e\u0637\u0623 \u0641\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644<br><small>' + e.message + '</small></div>';
+  }
+}
+
+function buildDropdown() {
+  document.getElementById('dropdownArea').innerHTML =
+    '<div class="custom-dropdown" id="customDropdown">' +
+      '<div class="dropdown-trigger" id="dropdownTrigger" onclick="toggleDropdown()">' +
+        '<span id="triggerText">\u2014 \u0627\u062e\u062a\u0631 \u0627\u0644\u0627\u0645\u062a\u062d\u0627\u0646 \u2014</span>' +
+        '<span class="arrow">\u25BC</span>' +
+      '</div>' +
+      '<div class="dropdown-menu" id="dropdownMenu">' +
+        '<div class="dropdown-search">' +
+          '<span class="dropdown-search-icon">\uD83D\uDD0D</span>' +
+          '<input type="text" id="dropSearch" placeholder="\u0627\u0628\u062d\u062b..." oninput="filterDropdown()">' +
+        '</div>' +
+        '<div class="dropdown-items" id="dropdownItems"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="exam-detail" id="examDetail"></div>';
+  filterDropdown();
+}
+
+function toggleDropdown() {
+  isOpen = !isOpen;
+  document.getElementById('dropdownTrigger').classList.toggle('open', isOpen);
+  document.getElementById('dropdownMenu').classList.toggle('open', isOpen);
+  if (isOpen) {
+    document.getElementById('dropSearch').value = '';
+    filterDropdown();
+    setTimeout(function() { document.getElementById('dropSearch').focus(); }, 100);
+  }
+}
+
+function closeDropdown() {
+  isOpen = false;
+  var t = document.getElementById('dropdownTrigger');
+  var m = document.getElementById('dropdownMenu');
+  if (t) t.classList.remove('open');
+  if (m) m.classList.remove('open');
+}
+
+function filterDropdown() {
+  var query = document.getElementById('dropSearch').value.trim().toLowerCase();
+  var container = document.getElementById('dropdownItems');
+  var filtered = [];
+  for (var i = 0; i < exams.length; i++) {
+    if (!query || exams[i].name.indexOf(query) !== -1) filtered.push(exams[i]);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="no-results-drop">\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var e = filtered[i];
+    var badge = e.icon ? e.icon : e.num;
+    html += '<div class="dropdown-item" onclick="selectExam(\'' + e.id + '\')">' +
+      '<div class="item-right">' +
+        '<div class="item-num">' + badge + '</div>' +
+        '<div class="item-info">' +
+          '<div class="item-title">' + e.name + '</div>' +
+          '<div class="item-meta">' + e.total + ' \u0633\u0624\u0627\u0644</div>' +
+        '</div>' +
+      '</div>' +
+      '<span class="item-arrow">\u2190</span>' +
+    '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function selectExam(id) {
+  var exam = null;
+  for (var i = 0; i < exams.length; i++) {
+    if (exams[i].id === id) { exam = exams[i]; break; }
+  }
+  if (!exam) return;
+
+  document.getElementById('triggerText').textContent = exam.name;
+  closeDropdown();
+
+  var detail = document.getElementById('examDetail');
+  detail.className = 'exam-detail active';
+
+  detail.innerHTML =
+    '<div class="detail-header">' +
+      '<span class="detail-title">' + exam.name + '</span>' +
+      '<span class="detail-badge">' + exam.total + ' \u0633\u0624\u0627\u0644</span>' +
+    '</div>' +
+    '<div class="detail-sections">' +
+      '<div class="detail-sec">' +
+        '<div class="detail-sec-name surgery">Surgery</div>' +
+        '<div class="detail-sec-count">' + exam.surgery + '</div>' +
+        '<div class="detail-sec-label">\u0633\u0624\u0627\u0644</div>' +
+      '</div>' +
+      '<div class="detail-sec">' +
+        '<div class="detail-sec-name medicine">Medicine</div>' +
+        '<div class="detail-sec-count">' + exam.medicine + '</div>' +
+        '<div class="detail-sec-label">\u0633\u0624\u0627\u0644</div>' +
+      '</div>' +
+      '<div class="detail-sec">' +
+        '<div class="detail-sec-name obgyn">OB/GYN</div>' +
+        '<div class="detail-sec-count">' + exam.obgyn + '</div>' +
+        '<div class="detail-sec-label">\u0633\u0624\u0627\u0644</div>' +
+      '</div>' +
+      '<div class="detail-sec">' +
+        '<div class="detail-sec-name pediatrics">Pediatrics</div>' +
+        '<div class="detail-sec-count">' + exam.pediatrics + '</div>' +
+        '<div class="detail-sec-label">\u0633\u0624\u0627\u0644</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-start-exam" id="btnStart" onclick="goToExam(\'' + id + '\')">\u0627\u0628\u062f\u0623 \u0627\u0644\u0627\u0645\u062a\u062d\u0627\u0646 \u2190</button>' +
+    '<div class="preload-status" id="preloadStatus"></div>';
+
+  preloadQuestions(id);
+}
+
+async function preloadQuestions(examId) {
+  var statusEl = document.getElementById('preloadStatus');
+  var btnEl = document.getElementById('btnStart');
+  preloadedExam = null;
+
+  try {
+    statusEl.textContent = '\u062c\u0627\u0631\u064a \u062a\u062d\u0636\u064a\u0631 \u0627\u0644\u0623\u0633\u0626\u0644\u0629...';
+    btnEl.disabled = true;
+
+    var snapshot;
+    if (examId === 'all') {
+      snapshot = await db.collection('questions').get();
+    } else {
+      snapshot = await db.collection('questions').where('exam_id', '==', examId).get();
+    }
+
+    var questions = [];
+    snapshot.forEach(function(doc) {
+      var d = doc.data();
+      var opts = [];
+      var keys = Object.keys(d.options).sort();
+      for (var k = 0; k < keys.length; k++) {
+        opts.push({
+          letter: keys[k].toLowerCase(),
+          text: d.options[keys[k]],
+          is_correct: keys[k] === d.answer
+        });
+      }
+      questions.push({
+        question: d.text,
+        options: opts,
+        correct_answer: d.answer.toLowerCase(),
+        number: d.number,
+        section: d.section
+      });
+    });
+
+    questions.sort(function(a, b) { return a.number - b.number; });
+
+    sessionStorage.setItem('exam_questions', JSON.stringify(questions));
+    sessionStorage.setItem('exam_id', examId);
+    preloadedExam = examId;
+
+    statusEl.textContent = '\u2705 \u062c\u0627\u0647\u0632';
+    btnEl.disabled = false;
+
+    setTimeout(function() { statusEl.textContent = ''; }, 1500);
+  } catch (e) {
+    statusEl.textContent = '';
+    btnEl.disabled = false;
+  }
+}
+
+function goToExam(examId) {
+  if (preloadedExam === examId) {
+    window.location.href = 'exam.html?exam=' + examId + '&preloaded=1';
+  } else {
+    window.location.href = 'exam.html?exam=' + examId;
+  }
+}
+
+document.addEventListener('click', function(e) {
+  var dd = document.getElementById('customDropdown');
+  if (dd && !dd.contains(e.target)) closeDropdown();
+});
+
+loadExams();
+</script>
+
+<style>
+.contact-section {
+  position: relative; z-index: 1;
+  padding: 20px 20px 48px;
+  margin-top: 40px;
+  width: 100%;
+}
+.cs-container { max-width: 700px; margin: 0 0 0 auto; }
+.cs-header { text-align: center; margin-bottom: 32px; }
+.cs-header h2 {
+  font-size: 1.8rem; font-weight: 900;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.cs-header p { color: #7b7fa3; font-size: 0.95rem; }
+.cs-tabs {
+  display: flex; gap: 8px; margin-bottom: 28px;
+  background: #15172a; border: 1px solid #252845;
+  border-radius: 16px; padding: 6px;
+}
+.cs-tab {
+  flex: 1; padding: 14px 16px; border-radius: 12px; border: none;
+  background: transparent; color: #7b7fa3;
+  font-family: 'Tajawal', sans-serif; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.cs-tab:hover { color: #e8eaf6; }
+.cs-tab.active {
+  background: #7c3aed; color: #fff;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.25);
+}
+.cs-panel { display: none; animation: fadeUp 0.4s ease; }
+.cs-panel.active { display: block; }
+.cs-card {
+  background: #15172a; border: 1px solid #252845;
+  border-radius: 20px; padding: 28px;
+}
+.cs-card-title {
+  font-size: 1rem; font-weight: 700; margin-bottom: 20px;
+  color: #a78bfa; display: flex; align-items: center; gap: 8px;
+}
+.cs-field { margin-bottom: 18px; }
+.cs-field label {
+  display: block; margin-bottom: 8px;
+  font-size: 0.85rem; font-weight: 600; color: #e8eaf6;
+}
+.cs-field label .cs-req { color: #f87171; margin-right: 2px; }
+.cs-field label .cs-opt { color: #7b7fa3; font-weight: 400; font-size: 0.75rem; }
+.cs-field input, .cs-field select, .cs-field textarea {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid #252845; background: #0a0b10;
+  color: #e8eaf6; font-family: 'Tajawal', sans-serif;
+  font-size: 0.9rem; font-weight: 500; outline: none;
+  transition: border-color 0.3s;
+}
+.cs-field input:focus, .cs-field select:focus, .cs-field textarea:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+.cs-field textarea { min-height: 100px; resize: vertical; }
+.cs-field select { cursor: pointer; }
+.cs-field select option { background: #15172a; color: #e8eaf6; }
+.cs-radio-group { display: flex; gap: 8px; }
+.cs-radio-opt {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 12px 10px; border-radius: 12px;
+  border: 1.5px solid #252845; cursor: pointer; transition: all 0.2s;
+}
+.cs-radio-opt:hover { border-color: #7c3aed; background: rgba(124,58,237,0.04); }
+.cs-radio-opt input[type="radio"] { accent-color: #7c3aed; width: 16px; height: 16px; }
+.cs-radio-opt span { font-size: 0.9rem; font-weight: 700; }
+.cs-file-upload {
+  border: 2px dashed #252845; border-radius: 14px;
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  transition: all 0.3s; position: relative;
+}
+.cs-file-upload:hover { border-color: #7c3aed; background: rgba(124,58,237,0.04); }
+.cs-file-upload-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.6; }
+.cs-file-upload-text { font-size: 0.9rem; color: #7b7fa3; font-weight: 500; margin-bottom: 4px; }
+.cs-file-upload-hint { font-size: 0.75rem; color: #7b7fa3; opacity: 0.7; }
+.cs-file-upload input[type="file"] {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; opacity: 0; cursor: pointer;
+}
+.cs-btn-submit {
+  width: 100%; padding: 16px; border-radius: 14px; border: none;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
+  color: #fff; font-family: 'Tajawal', sans-serif;
+  font-size: 1.05rem; font-weight: 800;
+  cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.25);
+}
+.cs-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(124,58,237,0.25);
+}
+.cs-hint { font-size: 0.75rem; color: #7b7fa3; margin-top: 6px; }
+.cs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cs-email { position: relative; }
+.cs-email input { padding-left: 40px; }
+.cs-email-icon {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%); font-size: 0.9rem;
+  color: #7b7fa3; pointer-events: none;
+}
+@media (max-width: 500px) {
+  .cs-row { grid-template-columns: 1fr; }
+  .cs-tab { font-size: 0.8rem; padding: 12px 10px; }
+  .cs-card { padding: 20px; }
+  .cs-radio-group { flex-wrap: wrap; }
+  .cs-radio-opt { flex: 0 0 calc(20% - 7px); }
+}
+.cs-msg { text-align: center; margin-top: 12px; font-size: 0.9rem; font-weight: 600; min-height: 24px; }
+.cs-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+</style>
+
+<section class="contact-section">
+  <div class="cs-container">
+    <div class="cs-header">
+      <h2>ساعدنا في تحسين الموقع</h2>
+      <p>ملاحظاتكم تساعدنا في تطوير الأسئلة والموقع — شاركنا رأيك أو أبلغنا عن أي خطأ في الأسئلة</p>
+    </div>
+
+    <div class="cs-tabs">
+      <button class="cs-tab active" onclick="csSwitch('correct',this)"><span>✏️</span> تصحيح إجابة</button>
+      <button class="cs-tab" onclick="csSwitch('addexam',this)"><span>📄</span> إضافة امتحان</button>
+      <button class="cs-tab" onclick="csSwitch('general',this)"><span>💬</span> ملاحظة عامة</button>
+    </div>
+
+    <div class="cs-panel active" id="cs-correct">
+      <div class="cs-card">
+        <div class="cs-card-title">✏️ تصحيح إجابة سؤال</div>
+        <div class="cs-row">
+          <div class="cs-field">
+            <label>الامتحان <span class="cs-req">*</span></label>
+            <select id="cf-exam">
+              <option value="">اختر الامتحان</option>
+              <option>امتحان 1</option><option>امتحان 2</option><option>امتحان 3</option><option>امتحان 4</option>
+              <option>امتحان 5</option><option>امتحان 6</option><option>امتحان 7</option><option>امتحان 8</option>
+            </select>
+          </div>
+          <div class="cs-field">
+            <label>القسم <span class="cs-req">*</span></label>
+            <select id="cf-section">
+              <option value="">اختر القسم</option>
+              <option>Surgery</option><option>Medicine</option><option>OB/GYN</option><option>Pediatrics</option>
+            </select>
+          </div>
+        </div>
+        <div class="cs-field">
+          <label>نص السؤال <span class="cs-req">*</span></label>
+          <textarea id="cf-qtext" placeholder="انسخ نص السؤال هنا كاملاً..."></textarea>
+        </div>
+        <div class="cs-field">
+          <label>الإجابة الصحيحة المقترحة <span class="cs-req">*</span></label>
+          <div class="cs-radio-group">
+            <label class="cs-radio-opt"><input type="radio" name="cs-answer" value="A"><span>A</span></label>
+            <label class="cs-radio-opt"><input type="radio" name="cs-answer" value="B"><span>B</span></label>
+            <label class="cs-radio-opt"><input type="radio" name="cs-answer" value="C"><span>C</span></label>
+            <label class="cs-radio-opt"><input type="radio" name="cs-answer" value="D"><span>D</span></label>
+            <label class="cs-radio-opt"><input type="radio" name="cs-answer" value="E"><span>E</span></label>
+          </div>
+        </div>
+        <div class="cs-field">
+          <label>السبب أو المرجع <span class="cs-opt">(اختياري)</span></label>
+          <textarea id="cf-reason" placeholder="اكتب سبب التصحيح أو اسم المرجع الطبي..." style="min-height:80px;"></textarea>
+        </div>
+        <button class="cs-btn-submit" id="cf-btn-correct" onclick="submitCorrection()">إرسال التصحيح ←</button>
+        <div class="cs-msg" id="cf-msg-correct"></div>
+      </div>
+    </div>
+
+    <div class="cs-panel" id="cs-addexam">
+      <div class="cs-card">
+        <div class="cs-card-title">📄 إرسال امتحان جديد</div>
+        <div class="cs-field">
+          <label>اسم أو وصف الامتحان <span class="cs-req">*</span></label>
+          <input type="text" id="cf-examname" placeholder="مثال: امتحان البورد 2023 الدور الأول">
+        </div>
+        <div class="cs-field">
+          <label>ملف الامتحان <span class="cs-req">*</span></label>
+          <div class="cs-file-upload" id="cf-examfile-zone">
+            <div class="cs-file-upload-icon">📄</div>
+            <div class="cs-file-upload-text" id="cf-examfile-text">ارفع ملف الامتحان</div>
+            <div class="cs-file-upload-hint">PDF أو Word — حد أقصى 20MB</div>
+            <input type="file" id="cf-examfile" accept=".pdf,.doc,.docx">
+          </div>
+        </div>
+        <div class="cs-field">
+          <label>ملف الإجابات <span class="cs-opt">(اختياري)</span></label>
+          <div class="cs-file-upload" id="cf-ansfile-zone">
+            <div class="cs-file-upload-icon">✅</div>
+            <div class="cs-file-upload-text" id="cf-ansfile-text">ارفع ملف الإجابات إن وجد</div>
+            <div class="cs-file-upload-hint">PDF, Word, أو صورة</div>
+            <input type="file" id="cf-ansfile" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+          </div>
+        </div>
+        <div class="cs-field">
+          <label>ملاحظات إضافية <span class="cs-opt">(اختياري)</span></label>
+          <textarea id="cf-examnotes" placeholder="أي معلومات إضافية عن الامتحان..." style="min-height:80px;"></textarea>
+        </div>
+        <div class="cs-field">
+          <label>بريدك الإلكتروني <span class="cs-req">*</span></label>
+          <div class="cs-email">
+            <span class="cs-email-icon">📧</span>
+            <input type="email" id="cf-email" placeholder="example@gmail.com">
+          </div>
+          <div class="cs-hint">للرجوع إليك في حالة الحاجة لتوضيح</div>
+        </div>
+        <button class="cs-btn-submit" id="cf-btn-exam" onclick="submitSuggested()">إرسال الامتحان ←</button>
+        <div class="cs-msg" id="cf-msg-exam"></div>
+      </div>
+    </div>
+
+    <div class="cs-panel" id="cs-general">
+      <div class="cs-card">
+        <div class="cs-card-title">💬 ملاحظة أو اقتراح</div>
+        <div class="cs-field">
+          <label>ملاحظة أو اقتراح <span class="cs-req">*</span></label>
+          <textarea id="cf-message" placeholder="اكتب ملاحظتك أو اقتراحك هنا..."></textarea>
+        </div>
+        <button class="cs-btn-submit" id="cf-btn-msg" onclick="submitMessage()">إرسال ←</button>
+        <div class="cs-msg" id="cf-msg-general"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function csSwitch(tab, btn) {
+  document.querySelectorAll('.cs-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.cs-panel').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('cs-' + tab).classList.add('active');
+}
+
+document.getElementById('cf-examfile').addEventListener('change', function() {
+  if (this.files[0]) document.getElementById('cf-examfile-text').textContent = this.files[0].name;
+});
+document.getElementById('cf-ansfile').addEventListener('change', function() {
+  if (this.files[0]) document.getElementById('cf-ansfile-text').textContent = this.files[0].name;
+});
+
+function showMsg(id, text, ok) {
+  var el = document.getElementById(id);
+  el.textContent = text;
+  el.style.color = ok ? '#34d399' : '#f87171';
+  setTimeout(function() { el.textContent = ''; }, 4000);
+}
+
+async function submitCorrection() {
+  var exam = document.getElementById('cf-exam').value;
+  var section = document.getElementById('cf-section').value;
+  var qtext = document.getElementById('cf-qtext').value.trim();
+  var answer = document.querySelector('input[name="cs-answer"]:checked');
+  var reason = document.getElementById('cf-reason').value.trim();
+
+  if (!exam || !section || !qtext || !answer) { showMsg('cf-msg-correct','الرجاء تعبئة جميع الحقول المطلوبة',false); return; }
+
+  var btn = document.getElementById('cf-btn-correct');
+  btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+
+  try {
+    await db.collection('corrections').add({
+      exam: exam, section: section, question_text: qtext,
+      suggested_answer: answer.value, reason: reason,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showMsg('cf-msg-correct','تم إرسال التصحيح بنجاح ✅',true);
+    document.getElementById('cf-exam').value = '';
+    document.getElementById('cf-section').value = '';
+    document.getElementById('cf-qtext').value = '';
+    document.getElementById('cf-reason').value = '';
+    if (answer) answer.checked = false;
+  } catch(e) { showMsg('cf-msg-correct','حدث خطأ، حاول مرة أخرى',false); }
+  finally { btn.disabled = false; btn.textContent = 'إرسال التصحيح ←'; }
+}
+
+async function uploadToCloudinary(file) {
+  var formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'medical_exams');
+  var res = await fetch('https://api.cloudinary.com/v1_1/dytrkwx2f/auto/upload', {
+    method: 'POST', body: formData
+  });
+  if (!res.ok) throw new Error('فشل رفع الملف');
+  var data = await res.json();
+  return { url: data.secure_url, name: file.name };
+}
+
+async function submitSuggested() {
+  var name = document.getElementById('cf-examname').value.trim();
+  var email = document.getElementById('cf-email').value.trim();
+  var notes = document.getElementById('cf-examnotes').value.trim();
+  var examFile = document.getElementById('cf-examfile').files[0];
+  var ansFile = document.getElementById('cf-ansfile').files[0];
+
+  if (!name || !email) { showMsg('cf-msg-exam','الرجاء تعبئة اسم الامتحان والبريد الإلكتروني',false); return; }
+  if (!examFile) { showMsg('cf-msg-exam','الرجاء رفع ملف الامتحان',false); return; }
+  if (examFile && examFile.size > 20 * 1024 * 1024) { showMsg('cf-msg-exam','حجم ملف الامتحان يتجاوز 20MB',false); return; }
+  if (ansFile && ansFile.size > 20 * 1024 * 1024) { showMsg('cf-msg-exam','حجم ملف الإجابات يتجاوز 20MB',false); return; }
+
+  var btn = document.getElementById('cf-btn-exam');
+  btn.disabled = true; btn.textContent = 'جاري رفع الملفات...';
+
+  try {
+    var examUpload = await uploadToCloudinary(examFile);
+    btn.textContent = 'جاري الحفظ...';
+
+    var ansUpload = null;
+    if (ansFile) {
+      btn.textContent = 'جاري رفع ملف الإجابات...';
+      ansUpload = await uploadToCloudinary(ansFile);
+    }
+
+    btn.textContent = 'جاري الحفظ...';
+    await db.collection('suggested_exams').add({
+      exam_name: name, email: email, notes: notes,
+      exam_file_name: examUpload.name,
+      exam_file_url: examUpload.url,
+      answers_file_name: ansUpload ? ansUpload.name : '',
+      answers_file_url: ansUpload ? ansUpload.url : '',
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showMsg('cf-msg-exam','تم إرسال الامتحان بنجاح ✅',true);
+    document.getElementById('cf-examname').value = '';
+    document.getElementById('cf-email').value = '';
+    document.getElementById('cf-examnotes').value = '';
+    document.getElementById('cf-examfile').value = '';
+    document.getElementById('cf-ansfile').value = '';
+    document.getElementById('cf-examfile-text').textContent = 'ارفع ملف الامتحان';
+    document.getElementById('cf-ansfile-text').textContent = 'ارفع ملف الإجابات إن وجد';
+  } catch(e) { showMsg('cf-msg-exam','حدث خطأ: '+e.message,false); }
+  finally { btn.disabled = false; btn.textContent = 'إرسال الامتحان ←'; }
+}
+
+async function submitMessage() {
+  var text = document.getElementById('cf-message').value.trim();
+  if (!text) { showMsg('cf-msg-general','اكتب ملاحظتك أولاً',false); return; }
+
+  var btn = document.getElementById('cf-btn-msg');
+  btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+
+  try {
+    await db.collection('messages').add({
+      text: text,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showMsg('cf-msg-general','تم إرسال الملاحظة بنجاح ✅',true);
+    document.getElementById('cf-message').value = '';
+  } catch(e) { showMsg('cf-msg-general','حدث خطأ، حاول مرة أخرى',false); }
+  finally { btn.disabled = false; btn.textContent = 'إرسال ←'; }
+}
+</script>
+
+<div class="footer">
+  دعواتنا تسبق أمنياتنا لكم بنجاح يثلج الصدور 🌹
+</div>
+
+</body>
+</html>
